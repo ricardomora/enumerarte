@@ -1,20 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { AspectPanel } from "@/components/aspect-panel";
+import { AspectStory } from "@/components/aspect-story";
 import { CalculationPanel } from "@/components/calculation-panel";
+import { LayerConstellation, type ProfileLayer } from "@/components/layer-constellation";
 import { getDestiny, getMission, getShield, getSoul } from "@/content";
 import { formatDate } from "@/lib/date-input";
 import type { CalendarDate, NameNumbers, NumerologyValue } from "@/lib/numerology";
-
-type ProfileLayer = "nucleo" | "escudo" | "alma" | "destino";
-
-const TABS: { id: ProfileLayer; label: string; needsName: boolean }[] = [
-  { id: "nucleo", label: "Núcleo", needsName: false },
-  { id: "escudo", label: "Escudo", needsName: true },
-  { id: "alma", label: "Alma", needsName: true },
-  { id: "destino", label: "Destino", needsName: true },
-];
 
 interface ProfileMapProps {
   name: string;
@@ -29,78 +21,75 @@ function tensionLine(
   otherLabel: string,
 ): string | null {
   if (nucleo === other) return null;
-  return `Tu Núcleo es ${nucleo} y tu ${otherLabel} es ${other}. Esa diferencia explica por qué por dentro sientes una cosa y hacia afuera proyectas otra.`;
+  return `Tu Núcleo vibra en ${nucleo} y tu ${otherLabel} en ${other}. Dos señales distintas — ahí está la tensión entre lo que sientes por dentro y lo que proyectas.`;
 }
 
 export function ProfileMap({ name, birthDate, mision, nameNumbers }: ProfileMapProps) {
   const [layer, setLayer] = useState<ProfileLayer>("nucleo");
   const displayName = name.trim().split(/\s+/)[0];
 
-  const activeTab = TABS.find((tab) => tab.id === layer) ?? TABS[0];
-  const nameLocked = activeTab.needsName && !nameNumbers;
+  const layerLabels: Record<ProfileLayer, string> = {
+    nucleo: "Núcleo",
+    escudo: "Escudo",
+    alma: "Alma",
+    destino: "Destino",
+  };
+
+  const nameLocked = layer !== "nucleo" && !nameNumbers;
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-mist-500">
-        {displayName} · {formatDate(birthDate)}
-      </p>
-
-      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Capas del mapa personal">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            role="tab"
-            aria-selected={layer === tab.id}
-            onClick={() => setLayer(tab.id)}
-            className={`rounded-full px-4 py-2 text-sm transition ${
-              layer === tab.id
-                ? "bg-accent-500/20 text-mist-100 ring-1 ring-accent-500/50"
-                : "bg-ink-900/60 text-mist-500 hover:text-mist-300"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div className="text-center">
+        <p className="text-sm text-mist-500">
+          {displayName} · {formatDate(birthDate)}
+        </p>
+        <p className="mt-1 text-xs text-mist-500">Tu mapa · cuatro capas conectadas</p>
       </div>
 
+      <LayerConstellation
+        mision={mision}
+        nameNumbers={nameNumbers}
+        active={layer}
+        onSelect={setLayer}
+      />
+
       {nameLocked ? (
-        <p className="rounded-xl border border-ink-700 bg-ink-900/60 p-4 text-sm text-mist-300">
-          Para ver {activeTab.label.toLowerCase()} necesitamos tu nombre completo (nombre y
-          apellidos), como en tu documento.
+        <p className="rounded-xl border border-ink-700 bg-ink-900/60 p-4 text-center text-sm text-mist-300">
+          Tu {layerLabels[layer].toLowerCase()} se revela con nombre completo — nombre y apellidos,
+          como en tu acta.
         </p>
       ) : null}
 
       {layer === "nucleo" ? (
-        <AspectPanel reading={getMission(mision)} layerLabel="Núcleo">
+        <AspectStory reading={getMission(mision)} layerLabel="Núcleo" name={name}>
           <CalculationPanel birthDate={birthDate} />
-        </AspectPanel>
+        </AspectStory>
       ) : null}
 
       {layer === "escudo" && nameNumbers ? (
         <div className="space-y-4">
           {tensionLine(mision, nameNumbers.escudo, "Escudo") ? (
-            <p className="rounded-xl border border-glow-400/30 bg-glow-400/8 p-4 text-sm text-mist-300">
+            <p className="rounded-xl border border-glow-400/30 bg-glow-400/8 p-4 text-center text-sm text-mist-300">
               {tensionLine(mision, nameNumbers.escudo, "Escudo")}
             </p>
           ) : null}
-          <AspectPanel reading={getShield(nameNumbers.escudo)} layerLabel="Escudo" />
+          <AspectStory reading={getShield(nameNumbers.escudo)} layerLabel="Escudo" name={name} />
         </div>
       ) : null}
 
       {layer === "alma" && nameNumbers ? (
         <div className="space-y-4">
           {tensionLine(mision, nameNumbers.alma, "Alma") ? (
-            <p className="rounded-xl border border-glow-400/30 bg-glow-400/8 p-4 text-sm text-mist-300">
+            <p className="rounded-xl border border-glow-400/30 bg-glow-400/8 p-4 text-center text-sm text-mist-300">
               {tensionLine(mision, nameNumbers.alma, "Alma")}
             </p>
           ) : null}
-          <AspectPanel reading={getSoul(nameNumbers.alma)} layerLabel="Alma" />
+          <AspectStory reading={getSoul(nameNumbers.alma)} layerLabel="Alma" name={name} />
         </div>
       ) : null}
 
       {layer === "destino" && nameNumbers ? (
-        <AspectPanel reading={getDestiny(nameNumbers.destino)} layerLabel="Destino" />
+        <AspectStory reading={getDestiny(nameNumbers.destino)} layerLabel="Destino" name={name} />
       ) : null}
     </div>
   );

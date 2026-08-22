@@ -21,7 +21,7 @@ export function CalculationPanel({ birthDate }: { birthDate: CalendarDate }) {
       }}
     >
       <summary className="cursor-pointer list-none text-sm text-mist-500 transition hover:text-mist-300">
-        <span className="group-open:hidden">Ver de dónde sale este número</span>
+        <span className="group-open:hidden">Ver cómo se calculó tu número</span>
         <span className="hidden group-open:inline">Ocultar el cálculo</span>
       </summary>
 
@@ -54,9 +54,7 @@ export function CalculationPanel({ birthDate }: { birthDate: CalendarDate }) {
       </div>
 
       <p className="mt-4 text-xs leading-relaxed text-mist-500">
-        Es aritmética modular: reducir un número sumando sus dígitos equivale a calcular su resto
-        entre nueve. Cualquiera puede reproducir esta cuenta a mano, y para nosotros eso es una
-        característica del producto, no un problema.
+        La cuenta completa, por si quieres verificarla tú mismo.
       </p>
     </details>
   );

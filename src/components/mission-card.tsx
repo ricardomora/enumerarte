@@ -1,4 +1,4 @@
-import { AspectPanel } from "@/components/aspect-panel";
+import { AspectStory } from "@/components/aspect-story";
 import { CalculationPanel } from "@/components/calculation-panel";
 import { getMission } from "@/content";
 import { formatDate } from "@/lib/date-input";
@@ -20,9 +20,9 @@ export function MissionCard({
       <p className="text-sm text-mist-500">
         {displayName} · {formatDate(birthDate)}
       </p>
-      <AspectPanel reading={getMission(mision)} layerLabel="Núcleo">
+      <AspectStory reading={getMission(mision)} layerLabel="Núcleo" name={name}>
         <CalculationPanel birthDate={birthDate} />
-      </AspectPanel>
+      </AspectStory>
     </div>
   );
 }

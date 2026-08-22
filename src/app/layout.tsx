@@ -15,12 +15,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: siteUrl(),
-  title: "Enumerarte · Entender a los tuyos, sin adivinación",
+  title: "Enumerarte · Tu mapa y tus vínculos",
   description:
-    "Un lenguaje compartido para hablar de por qué chocas con tu pareja, tu familia o tu jefe. Aritmética a la vista, consejo basado en comunicación real y sin necesidad de registro.",
+    "Descubre tu Núcleo, Alma, Escudo y Destino. Entiende la conexión con tu pareja, familia y amigos.",
   openGraph: {
     title: "Enumerarte",
-    description: "Entender a alguien es más útil que adivinar su futuro.",
+    description: "Tu mapa. Tus vínculos. Tus señales.",
     locale: "es_ES",
     type: "website",
   },

@@ -11,7 +11,7 @@
  */
 
 import { content } from "@/content";
-import { DEFAULT_LOCALE, LOCALES, type AspectReading, type Locale } from "@/content/types";
+import { type AspectReading, DEFAULT_LOCALE, LOCALES, type Locale } from "@/content/types";
 import { ALL_VALUES, allPairKeys } from "@/lib/numerology";
 
 const strict = process.argv.includes("--strict");

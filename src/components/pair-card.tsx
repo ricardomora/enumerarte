@@ -28,8 +28,8 @@ export function PairCard({
 
       <p className="text-pretty leading-relaxed text-mist-300">{pair.body}</p>
 
-      <div className="rounded-xl border border-accent-500/30 bg-accent-500/8 p-5">
-        <p className="text-xs uppercase tracking-wider text-accent-400">Qué hacer con esto</p>
+      <div className="rounded-xl border border-accent-500/40 bg-accent-500/10 p-5">
+        <p className="text-xs uppercase tracking-wider text-accent-400">Señal para esta semana</p>
         <p className="mt-2 text-pretty leading-relaxed text-mist-100">{pair.practice}</p>
       </div>
     </article>

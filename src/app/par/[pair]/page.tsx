@@ -104,24 +104,21 @@ export default async function PairPage(props: PageProps<"/par/[pair]">) {
 
       <section className="mt-8 space-y-4 text-center">
         <div className="space-y-1">
-          <h2 className="text-balance text-lg font-medium text-mist-100">
-            Esto es solo una de tus relaciones
-          </h2>
+          <h2 className="text-balance text-lg font-medium text-mist-100">¿Y tu mapa?</h2>
           <p className="text-sm text-mist-500">
-            Calcula tu número y mira qué pasa con las demás personas de tu círculo. Toma quince
-            segundos y no hace falta registrarse.
+            Descubre tu Núcleo y mira qué señales conectan con las personas de tu vida.
           </p>
         </div>
         <Link
           href="/"
           className="inline-block rounded-xl bg-accent-500 px-6 py-3.5 font-medium text-white transition hover:bg-accent-400"
         >
-          Calcular el mío
+          Revelar mi mapa
         </Link>
       </section>
 
       <footer className="mt-12 text-center text-xs text-mist-500">
-        Enumerarte · Herramienta de comprensión, no de adivinación
+        Enumerarte · Tu mapa y tus vínculos
       </footer>
     </main>
   );
