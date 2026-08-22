@@ -18,6 +18,8 @@ interface PersonFormProps {
   title: string;
   hint?: string;
   namePlaceholder: string;
+  nameLabel?: string;
+  requireFullName?: boolean;
   submitLabel: string;
   onSubmit: (person: PersonInput) => void;
 }
@@ -26,6 +28,8 @@ export function PersonForm({
   title,
   hint,
   namePlaceholder,
+  nameLabel = "Nombre",
+  requireFullName = false,
   submitLabel,
   onSubmit,
 }: PersonFormProps) {
@@ -50,6 +54,14 @@ export function PersonForm({
     if (trimmed.length < 2) {
       setError("Escribe al menos un nombre.");
       return;
+    }
+
+    if (requireFullName) {
+      const parts = trimmed.split(/\s+/).filter((part) => part.length >= 2);
+      if (parts.length < 2) {
+        setError("Escribe nombre y apellidos, como en tu documento.");
+        return;
+      }
     }
 
     const parsed = parseDateInput(date);
@@ -79,7 +91,7 @@ export function PersonForm({
       <div className="space-y-3">
         <div className="space-y-1.5">
           <label htmlFor={nameId} className="block text-xs uppercase tracking-wider text-mist-500">
-            Nombre
+            {nameLabel}
           </label>
           <input
             id={nameId}

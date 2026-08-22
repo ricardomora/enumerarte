@@ -2,9 +2,9 @@
  * Contenido como datos, nunca como código.
  *
  * Regla de integridad del proyecto: el número es solo la clave de enrutamiento.
- * La carga útil (`practice` en los pares) debe ser consejo relacional apoyado en
- * comunicación y manejo de conflicto, de modo que sea válido para el usuario
- * independientemente de si el número que lo seleccionó significa algo.
+ * La carga útil debe ser consejo relacional apoyado en comunicación y manejo
+ * de conflicto, de modo que sea válido para el usuario independientemente de si
+ * el número que lo seleccionó significa algo.
  *
  * Ver la sección 6-bis del plan: la numerología no tiene validez predictiva
  * demostrada, así que el valor entregado tiene que estar en el consejo.
@@ -16,19 +16,34 @@ export const LOCALES = ["es", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "es";
 
-export interface MissionContent {
+/** Lectura estructurada compartida por Núcleo, Alma, Escudo y Destino. */
+export interface AspectReading {
   value: NumerologyValue;
   /** Nombre corto del arquetipo. Es lo que el usuario comparte. */
   title: string;
   /** Una línea memorable. Va en la tarjeta compartible y en la OG image. */
   essence: string;
-  /** Dos o tres frases sobre cómo se mueve esta persona. */
+  /** Dos o tres frases sobre cómo se mueve esta persona en esta capa. */
   body: string;
-  /** Lo que aporta de forma natural. */
-  strength: string;
-  /** Dónde se atasca. Evitar el tono de castigo: es información, no juicio. */
-  friction: string;
+  /** Tres situaciones concretas, no adjetivos sueltos. */
+  strengths: readonly [string, string, string];
+  /** Tres patrones de atasco, sin tono de castigo. */
+  frictions: readonly [string, string, string];
+  /** Cómo se ve bajo presión (más visceral que friction). */
+  underPressure: string;
+  /** Cómo se mueve con pareja, familia y amigos. */
+  inRelationships: string;
+  /** Lo que otros ven y tú no (genera el "cómo supiste eso"). */
+  blindSpot: string;
+  /** Una acción concreta para esta semana. */
+  microPractice: string;
 }
+
+export type MissionContent = AspectReading;
+
+export type SoulContent = AspectReading;
+export type ShieldContent = AspectReading;
+export type DestinyContent = AspectReading;
 
 export interface PairContent {
   key: PairKey;
@@ -46,4 +61,7 @@ export interface PairContent {
 export interface LocaleContent {
   missions: Record<string, MissionContent>;
   pairs: Record<string, PairContent>;
+  souls: Record<string, SoulContent>;
+  shields: Record<string, ShieldContent>;
+  destinies: Record<string, DestinyContent>;
 }

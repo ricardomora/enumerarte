@@ -11,7 +11,7 @@
  */
 
 import { content } from "@/content";
-import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/content/types";
+import { DEFAULT_LOCALE, LOCALES, type AspectReading, type Locale } from "@/content/types";
 import { ALL_VALUES, allPairKeys } from "@/lib/numerology";
 
 const strict = process.argv.includes("--strict");
@@ -27,8 +27,38 @@ function isBlank(value: unknown): boolean {
   return typeof value !== "string" || value.trim().length === 0;
 }
 
+const ASPECT_FIELDS = [
+  "title",
+  "essence",
+  "body",
+  "underPressure",
+  "inRelationships",
+  "blindSpot",
+  "microPractice",
+] as const;
+
+function auditAspect(prefix: string, key: string, entry: AspectReading): string[] {
+  const malformed: string[] = [];
+  if (isBlank(entry.title)) malformed.push(`${prefix} ${key}: title vacío`);
+  for (const field of ASPECT_FIELDS) {
+    if (field === "title") continue;
+    if (isBlank(entry[field])) malformed.push(`${prefix} ${key}: ${field} vacío`);
+  }
+  for (const listField of ["strengths", "frictions"] as const) {
+    const list = entry[listField];
+    if (!Array.isArray(list) || list.length !== 3) {
+      malformed.push(`${prefix} ${key}: ${listField} debe tener exactamente 3 entradas`);
+      continue;
+    }
+    for (const [index, item] of list.entries()) {
+      if (isBlank(item)) malformed.push(`${prefix} ${key}: ${listField}[${index}] vacío`);
+    }
+  }
+  return malformed;
+}
+
 function auditLocale(locale: Locale): LocaleReport {
-  const { missions, pairs } = content[locale];
+  const { missions, pairs, souls, shields, destinies } = content[locale];
   const missingMissions: string[] = [];
   const missingPairs: string[] = [];
   const malformed: string[] = [];
@@ -43,8 +73,25 @@ function auditLocale(locale: Locale): LocaleReport {
     if (entry.value !== value) {
       malformed.push(`mission ${key}: el campo value dice ${entry.value}`);
     }
-    for (const field of ["title", "essence", "body", "strength", "friction"] as const) {
-      if (isBlank(entry[field])) malformed.push(`mission ${key}: ${field} vacío`);
+    malformed.push(...auditAspect("mission", key, entry));
+  }
+
+  for (const [label, table] of [
+    ["soul", souls],
+    ["shield", shields],
+    ["destiny", destinies],
+  ] as const) {
+    for (const value of ALL_VALUES) {
+      const key = String(value);
+      const entry = table[key];
+      if (!entry) {
+        if (locale === DEFAULT_LOCALE) malformed.push(`${label} ${key}: faltante`);
+        continue;
+      }
+      if (entry.value !== value) {
+        malformed.push(`${label} ${key}: el campo value dice ${entry.value}`);
+      }
+      malformed.push(...auditAspect(label, key, entry));
     }
   }
 

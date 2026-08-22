@@ -7,33 +7,73 @@
  */
 
 import { type NumerologyValue, pairKey } from "@/lib/numerology";
+import { destinies as enDestinies, shields as enShields, souls as enSouls } from "./en/aspects";
 import { missions as enMissions } from "./en/missions";
 import { pairs as enPairs } from "./en/pairs";
+import { destinies as esDestinies, shields as esShields, souls as esSouls } from "./es/aspects";
 import { missions as esMissions } from "./es/missions";
 import { pairs as esPairs } from "./es/pairs";
 import {
   DEFAULT_LOCALE,
+  type DestinyContent,
   type Locale,
   type LocaleContent,
   type MissionContent,
   type PairContent,
+  type ShieldContent,
+  type SoulContent,
 } from "./types";
 
 export const content: Record<Locale, LocaleContent> = {
-  es: { missions: esMissions, pairs: esPairs },
-  en: { missions: enMissions, pairs: enPairs },
+  es: {
+    missions: esMissions,
+    pairs: esPairs,
+    souls: esSouls,
+    shields: esShields,
+    destinies: esDestinies,
+  },
+  en: {
+    missions: enMissions,
+    pairs: enPairs,
+    souls: enSouls,
+    shields: enShields,
+    destinies: enDestinies,
+  },
 };
+
+function resolveAspect<T extends { value: NumerologyValue }>(
+  table: Record<string, T>,
+  fallback: Record<string, T>,
+  value: NumerologyValue,
+): T {
+  const key = String(value);
+  const found = table[key] ?? fallback[key];
+  if (!found) {
+    throw new Error(`Sin contenido para el valor ${key}`);
+  }
+  return found;
+}
 
 export function getMission(
   value: NumerologyValue,
   locale: Locale = DEFAULT_LOCALE,
 ): MissionContent {
-  const key = String(value);
-  const found = content[locale].missions[key] ?? content[DEFAULT_LOCALE].missions[key];
-  if (!found) {
-    throw new Error(`Sin contenido de misión para el valor ${key}`);
-  }
-  return found;
+  return resolveAspect(content[locale].missions, content[DEFAULT_LOCALE].missions, value);
+}
+
+export function getSoul(value: NumerologyValue, locale: Locale = DEFAULT_LOCALE): SoulContent {
+  return resolveAspect(content[locale].souls, content[DEFAULT_LOCALE].souls, value);
+}
+
+export function getShield(value: NumerologyValue, locale: Locale = DEFAULT_LOCALE): ShieldContent {
+  return resolveAspect(content[locale].shields, content[DEFAULT_LOCALE].shields, value);
+}
+
+export function getDestiny(
+  value: NumerologyValue,
+  locale: Locale = DEFAULT_LOCALE,
+): DestinyContent {
+  return resolveAspect(content[locale].destinies, content[DEFAULT_LOCALE].destinies, value);
 }
 
 export function getPair(
@@ -49,5 +89,13 @@ export function getPair(
   return found;
 }
 
-export type { Locale, MissionContent, PairContent } from "./types";
+export type {
+  AspectReading,
+  DestinyContent,
+  Locale,
+  MissionContent,
+  PairContent,
+  ShieldContent,
+  SoulContent,
+} from "./types";
 export { DEFAULT_LOCALE, LOCALES } from "./types";

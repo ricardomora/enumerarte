@@ -4,63 +4,68 @@ import { useState } from "react";
 import { track } from "@/lib/track";
 
 /**
- * Puerta falsa de precio.
+ * Puerta falsa de premium único.
  *
- * Mide disposición a pagar antes de construir la capa premium. El clic no cobra
- * nada y el mensaje posterior dice la verdad: todavía no existe. Simular un
- * cobro real sería engañoso y además arruinaría la señal, porque el abandono
- * en el checkout no distinguiría desinterés de desconfianza.
+ * Una sola oferta clara: lo relacional en el tiempo (más personas, alertas,
+ * consejos). El clic no cobra nada; mide interés mientras la capa premium se
+ * construye.
  */
 
-const TIERS = [
-  { id: "mensual", price: "3,99", period: "al mes", note: "Cancelas cuando quieras" },
-  { id: "anual", price: "24", period: "al año", note: "Equivale a 2 al mes", featured: true },
-  { id: "unico", price: "39", period: "pago único", note: "Acceso permanente" },
+const PREMIUM_FEATURES = [
+  "Más de dos personas en tu círculo",
+  "Alertas cuando alguien cercano entra en un ciclo difícil",
+  "Consejo semanal para ti y para tratar a cada vínculo",
+  "Calendario de días favorables",
 ] as const;
 
-export function PriceGate() {
-  const [clicked, setClicked] = useState<string | null>(null);
+export function PriceGate({ compact = false }: { compact?: boolean }) {
+  const [clicked, setClicked] = useState(false);
+
+  function handleClick() {
+    track("price_clicked", { tier: "premium" });
+    setClicked(true);
+  }
 
   return (
     <section className="space-y-4">
-      <div className="space-y-1 text-center">
-        <h3 className="text-balance text-lg font-medium text-mist-100">
-          Mapea a todo tu círculo, no solo a una persona
-        </h3>
+      <div className={`space-y-1 ${compact ? "text-left" : "text-center"}`}>
+        <div className={`flex items-center gap-2 ${compact ? "" : "justify-center"}`}>
+          <h3 className="text-balance text-lg font-medium text-mist-100">Enumerarte Premium</h3>
+          <span className="rounded-full border border-glow-400/40 bg-glow-400/10 px-2.5 py-0.5 text-xs font-medium text-glow-300">
+            En construcción
+          </span>
+        </div>
         <p className="text-sm text-mist-500">
-          Vínculos ilimitados, calendario de días favorables y avisos cuando alguien cercano entra
-          en un ciclo difícil.
+          Lo relacional en el tiempo: tu círculo completo, avisos cruzados y consejos para la
+          semana.
         </p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        {TIERS.map((tier) => (
-          <button
-            key={tier.id}
-            type="button"
-            onClick={() => {
-              track("price_clicked", { tier: tier.id, price: tier.price });
-              setClicked(tier.id);
-            }}
-            className={`rounded-xl border p-4 text-left transition ${
-              "featured" in tier && tier.featured
-                ? "border-accent-500/60 bg-accent-500/10 hover:bg-accent-500/20"
-                : "border-ink-700 bg-ink-900/60 hover:border-ink-600"
-            }`}
-          >
-            <p className="font-mono text-2xl text-mist-100">
-              ${tier.price}
-              <span className="ml-1 text-xs text-mist-500">{tier.period}</span>
-            </p>
-            <p className="mt-1 text-xs text-mist-500">{tier.note}</p>
-          </button>
-        ))}
+      <div className="rounded-xl border border-accent-500/50 bg-accent-500/8 p-5">
+        <ul className="space-y-2.5 text-sm text-mist-300">
+          {PREMIUM_FEATURES.map((feature) => (
+            <li key={feature} className="flex gap-2">
+              <span aria-hidden className="text-accent-400">
+                ·
+              </span>
+              <span>{feature}</span>
+            </li>
+          ))}
+        </ul>
+
+        <button
+          type="button"
+          onClick={handleClick}
+          className="mt-5 w-full rounded-xl bg-accent-500 px-5 py-3.5 font-medium text-white transition hover:bg-accent-400 active:scale-[0.99]"
+        >
+          Avísame cuando esté listo
+        </button>
       </div>
 
       {clicked ? (
         <p role="status" className="animate-rise text-center text-sm text-mist-300">
-          Todavía no está listo, y preferimos decírtelo a cobrarte por algo que no existe. Deja tu
-          correo arriba y serás de los primeros.
+          Todavía lo estamos construyendo. Deja tu correo arriba y serás de los primeros en
+          probarlo.
         </p>
       ) : null}
     </section>
