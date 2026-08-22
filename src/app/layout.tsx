@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,6 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: siteUrl(),
   title: "Enumerarte · Entender a los tuyos, sin adivinación",
   description:
     "Un lenguaje compartido para hablar de por qué chocas con tu pareja, tu familia o tu jefe. Aritmética a la vista, consejo basado en comunicación real y sin necesidad de registro.",

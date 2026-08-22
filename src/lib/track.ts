@@ -22,7 +22,11 @@ export type TrackEvent =
   | "pair_viewed"
   | "email_captured"
   /** Puerta falsa: clic en un precio para un producto que todavía no existe. */
-  | "price_clicked";
+  | "price_clicked"
+  /** Alguien decide difundir su lectura. Entrada del bucle viral. */
+  | "share_clicked"
+  /** Alguien llega desde un enlace compartido. Salida del bucle viral. */
+  | "share_opened";
 
 const VISITOR_KEY = "enumerarte.visitor";
 

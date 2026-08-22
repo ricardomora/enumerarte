@@ -27,10 +27,17 @@ pnpm dev
 
 Variables de entorno, todas opcionales en desarrollo:
 
-| Variable        | Para qué sirve                                                         |
-| --------------- | ---------------------------------------------------------------------- |
-| `POSTHOG_KEY`   | Sin ella los eventos solo se escriben en el log del servidor           |
-| `POSTHOG_HOST`  | Por defecto `https://us.i.posthog.com`                                 |
+| Variable       | Para qué sirve                                                                   |
+| -------------- | -------------------------------------------------------------------------------- |
+| `POSTHOG_KEY`  | Sin ella los eventos solo se escriben en el log del servidor                      |
+| `POSTHOG_HOST` | Por defecto `https://us.i.posthog.com`                                            |
+| `SITE_URL`     | Dominio propio, p. ej. `https://enumerarte.com`. Resuelve las imágenes de vista previa |
+
+`SITE_URL` importa en producción: sin ella las URLs de Open Graph se resuelven
+contra `localhost`, y WhatsApp no puede descargar la vista previa del enlace
+compartido. En Vercel se usa `VERCEL_PROJECT_PRODUCTION_URL` como respaldo, pero
+conviene fijar el dominio propio para que las vistas previas no apunten a un
+despliegue de vista previa.
 
 ## Comandos
 

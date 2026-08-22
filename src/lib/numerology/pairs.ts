@@ -39,3 +39,35 @@ export function allPairKeys(): PairKey[] {
 }
 
 export const TOTAL_PAIR_KEYS = (ALL_VALUES.length * (ALL_VALUES.length + 1)) / 2;
+
+export interface ParsedPairKey {
+  a: NumerologyValue;
+  b: NumerologyValue;
+  /** La forma canónica, que puede diferir de la recibida. */
+  canonical: PairKey;
+}
+
+/**
+ * Lee una clave de par que llega desde el exterior, típicamente una URL
+ * compartida por WhatsApp donde cualquiera puede haberla editado a mano.
+ *
+ * Acepta el orden invertido y devuelve la forma canónica, para que la página
+ * pueda redirigir en lugar de servir el mismo contenido en dos direcciones
+ * distintas. Devuelve `null` ante cualquier cosa que no sea un par real, de
+ * modo que la ruta pueda responder 404 en vez de calcular sobre basura.
+ */
+export function parsePairKey(raw: string): ParsedPairKey | null {
+  const match = /^(\d{1,2})x(\d{1,2})$/.exec(raw);
+  if (!match) return null;
+
+  const a = Number(match[1]);
+  const b = Number(match[2]);
+  const allowed = ALL_VALUES as readonly number[];
+  if (!allowed.includes(a) || !allowed.includes(b)) return null;
+
+  return {
+    a: a as NumerologyValue,
+    b: b as NumerologyValue,
+    canonical: pairKey(a as NumerologyValue, b as NumerologyValue),
+  };
+}

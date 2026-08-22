@@ -26,7 +26,9 @@ export {
 export {
   allPairKeys,
   type PairKey,
+  type ParsedPairKey,
   pairKey,
+  parsePairKey,
   RELATIONSHIP_TYPES,
   type RelationshipType,
   TOTAL_PAIR_KEYS,

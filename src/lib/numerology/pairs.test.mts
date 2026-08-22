@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { allPairKeys, pairKey, TOTAL_PAIR_KEYS } from "./pairs.js";
+import { allPairKeys, pairKey, parsePairKey, TOTAL_PAIR_KEYS } from "./pairs.js";
 import { ALL_VALUES, reduce } from "./reduce.js";
 
 describe("pairKey", () => {
@@ -17,6 +17,36 @@ describe("pairKey", () => {
 
   test("admite pares del mismo número", () => {
     assert.equal(pairKey(7, 7), "7x7");
+  });
+});
+
+describe("parsePairKey", () => {
+  test("lee una clave canónica", () => {
+    assert.deepEqual(parsePairKey("8x11"), { a: 8, b: 11, canonical: "8x11" });
+  });
+
+  test("acepta el orden invertido y delata la forma canónica", () => {
+    const parsed = parsePairKey("11x8");
+    assert.deepEqual(parsed, { a: 11, b: 8, canonical: "8x11" });
+    assert.notEqual(parsed?.canonical, "11x8");
+  });
+
+  test("rechaza números que el sistema no produce", () => {
+    for (const raw of ["10x5", "0x5", "5x44", "12x12", "99x1"]) {
+      assert.equal(parsePairKey(raw), null, `debería rechazar ${raw}`);
+    }
+  });
+
+  test("rechaza cualquier cosa que no tenga la forma exacta", () => {
+    for (const raw of ["", "8", "8x", "x11", "8x11x2", "8X11", "8-11", "../8x11", "8x11?a=b"]) {
+      assert.equal(parsePairKey(raw), null, `debería rechazar "${raw}"`);
+    }
+  });
+
+  test("toda clave generada se puede volver a leer", () => {
+    for (const key of allPairKeys()) {
+      assert.equal(parsePairKey(key)?.canonical, key);
+    }
   });
 });
 

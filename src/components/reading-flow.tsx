@@ -6,6 +6,7 @@ import { MissionCard } from "@/components/mission-card";
 import { PairCard } from "@/components/pair-card";
 import { PersonForm, type PersonInput } from "@/components/person-form";
 import { PriceGate } from "@/components/price-gate";
+import { ShareButtons } from "@/components/share-buttons";
 import { computeMision, type NumerologyValue } from "@/lib/numerology";
 import { track } from "@/lib/track";
 
@@ -108,6 +109,12 @@ export function ReadingFlow() {
           />
 
           <div className="space-y-8 border-t border-ink-700 pt-6">
+            <ShareButtons
+              a={self.mision}
+              b={other.mision}
+              selfName={firstName(self.name)}
+              otherName={firstName(other.name)}
+            />
             <EmailCapture mision={self.mision} />
             <PriceGate />
           </div>
