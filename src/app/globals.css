@@ -1,26 +1,70 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-ink-950: #0b0a14;
+  --color-ink-900: #12101f;
+  --color-ink-800: #1a1730;
+  --color-ink-700: #262242;
+  --color-ink-600: #3a3560;
+
+  --color-mist-100: #f4f2ff;
+  --color-mist-300: #cdc7e8;
+  --color-mist-500: #9a92c4;
+
+  --color-glow-400: #c9a227;
+  --color-glow-300: #e6c04a;
+
+  --color-accent-500: #7c5cff;
+  --color-accent-400: #9a80ff;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    color-scheme: dark;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background-color: var(--color-ink-950);
+    color: var(--color-mist-100);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* El calendario nativo del navegador es blanco sobre oscuro por defecto. */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) opacity(0.6);
+    cursor: pointer;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility grain {
+  background-image:
+    radial-gradient(
+      circle at 20% 0%,
+      color-mix(in oklab, var(--color-accent-500) 22%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 85% 15%,
+      color-mix(in oklab, var(--color-glow-400) 12%, transparent),
+      transparent 45%
+    );
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-rise {
+  animation: rise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
