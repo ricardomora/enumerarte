@@ -47,10 +47,12 @@ export function isFutureDate(date: CalendarDate, today = todayCalendarDate()): b
 }
 
 export function formatDate(date: CalendarDate, locale = "es-ES"): string {
-  const monthName = new Intl.DateTimeFormat(locale, { month: "long" }).format(
-    // Solo se usa para obtener el nombre del mes, así que el día fijo y el UTC
-    // explícito evitan cualquier corrimiento de huso.
-    new Date(Date.UTC(2000, date.month - 1, 1)),
-  );
+  // timeZone UTC es obligatorio: Date.UTC(2000, mes-1, 1) a medianoche UTC cae
+  // en el mes anterior en husos al oeste (p. ej. Colombia UTC-5), y sin UTC
+  // Intl mostraría "julio" para agosto.
+  const monthName = new Intl.DateTimeFormat(locale, {
+    month: "long",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(2000, date.month - 1, 1)));
   return `${date.day} de ${monthName} de ${date.year}`;
 }

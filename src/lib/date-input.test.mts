@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import {
   compareCalendarDates,
+  formatDate,
   isFutureDate,
   parseDateInput,
   toDateInputValue,
@@ -52,6 +53,20 @@ describe("compareCalendarDates", () => {
     assert.equal(compareCalendarDates(base, base), 0);
     assert.ok(compareCalendarDates({ year: 2000, month: 6, day: 16 }, base) > 0);
     assert.ok(compareCalendarDates({ year: 2000, month: 7, day: 1 }, base) > 0);
+  });
+});
+
+describe("formatDate", () => {
+  test("agosto no se muestra como julio en husos al oeste de UTC", () => {
+    const formatted = formatDate({ year: 1992, month: 8, day: 31 });
+    assert.match(formatted, /agosto/i);
+    assert.doesNotMatch(formatted, /julio/i);
+    assert.equal(formatted, "31 de agosto de 1992");
+  });
+
+  test("enero y diciembre en los extremos del calendario", () => {
+    assert.equal(formatDate({ year: 2000, month: 1, day: 1 }), "1 de enero de 2000");
+    assert.equal(formatDate({ year: 1999, month: 12, day: 31 }), "31 de diciembre de 1999");
   });
 });
 
