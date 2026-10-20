@@ -98,3 +98,51 @@ export function shareMessage(selfName: string, otherName: string): string {
     ? `Mira lo que dice de ${selfName} y ${otherName}.`
     : "Mira lo que dice de nosotros dos.";
 }
+
+export interface ShareGlyph {
+  value: NumerologyValue;
+  label: string;
+}
+
+/** Lo que se dibuja en la imagen que viaja a WhatsApp, historias o TikTok. */
+export interface ShareCardData {
+  /** Quién comparte, en una línea. */
+  kicker: string;
+  /** La frase que tiene que enganchar. */
+  message: string;
+  /** Una línea más, con el tono de la relación o de esa parte. */
+  detail?: string;
+  left: ShareGlyph;
+  right?: ShareGlyph;
+}
+
+/** Primera frase, acotada, para que la imagen no se convierta en un muro de texto. */
+export function clipShareLine(text: string, max = 140): string {
+  const flat = text.replace(/\s+/g, " ").trim();
+  const sentence = flat.split(/(?<=[.!?])\s/)[0] ?? flat;
+  if (sentence.length <= max) return sentence;
+  const sliced = sentence.slice(0, max - 1);
+  const boundary = sliced.lastIndexOf(" ");
+  const trimmed = (boundary > 12 ? sliced.slice(0, boundary) : sliced).trimEnd();
+  return `${trimmed}…`;
+}
+
+/**
+ * En local el enlace no se puede abrir desde otro teléfono, y pegarlo solo
+ * parece un mensaje sospechoso. La imagen viaja igual; el enlace se suma
+ * cuando el sitio ya tiene un dominio público.
+ */
+export function publicShareUrl(url: string): string {
+  try {
+    const host = new URL(url).hostname;
+    if (host === "localhost" || host === "127.0.0.1") return "";
+    return url;
+  } catch {
+    return "";
+  }
+}
+
+export function shareCaption(card: ShareCardData, url: string): string {
+  const link = publicShareUrl(url);
+  return [card.kicker, card.message, link].filter((line) => line.length > 0).join("\n");
+}

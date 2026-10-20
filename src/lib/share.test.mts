@@ -1,7 +1,15 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { allPairKeys, parsePairKey } from "./numerology/index.js";
-import { buildPairPath, sanitizeShareName, shareMessage, shareTargets } from "./share.js";
+import {
+  buildPairPath,
+  clipShareLine,
+  publicShareUrl,
+  sanitizeShareName,
+  shareCaption,
+  shareMessage,
+  shareTargets,
+} from "./share.js";
 
 describe("sanitizeShareName", () => {
   test("conserva letras acentuadas y la ñ", () => {
@@ -97,5 +105,39 @@ describe("shareMessage", () => {
 
   test("nunca dice 'únete', porque la invitación es contenido y no registro", () => {
     assert.ok(!shareMessage("Ricardo", "Ana").toLowerCase().includes("únete"));
+  });
+});
+
+describe("clipShareLine", () => {
+  test("se queda con la primera frase", () => {
+    assert.equal(clipShareLine("Sienten mucho. Después se agotan."), "Sienten mucho.");
+  });
+
+  test("acota una frase larga sin cortar a mitad de palabra", () => {
+    const line = clipShareLine("palabra ".repeat(40), 40);
+    assert.ok(line.length <= 40);
+    assert.ok(line.endsWith("…"));
+  });
+});
+
+describe("shareCaption", () => {
+  const card = {
+    kicker: "Ana te comparte su conexión con Ricardo",
+    message: "Sensibilidad extrema",
+    left: { value: 11 as const, label: "Ana" },
+    right: { value: 33 as const, label: "Ricardo" },
+  };
+
+  test("en local no pega el enlace, porque no se puede abrir desde otro teléfono", () => {
+    assert.equal(
+      shareCaption(card, "http://localhost:3000/par/11x33?a=Ana&b=Ricardo"),
+      "Ana te comparte su conexión con Ricardo\nSensibilidad extrema",
+    );
+    assert.equal(publicShareUrl("http://127.0.0.1:3000/par/11x33"), "");
+  });
+
+  test("con dominio público suma el enlace para que puedan abrirlo", () => {
+    const caption = shareCaption(card, "https://enumerarte.com/par/11x33?a=Ana&b=Ricardo");
+    assert.ok(caption.endsWith("https://enumerarte.com/par/11x33?a=Ana&b=Ricardo"));
   });
 });

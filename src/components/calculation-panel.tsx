@@ -10,7 +10,13 @@ import { track } from "@/lib/track";
  * funciona escondiendo de dónde sale el número. Mostrar la aritmética completa
  * es lo que separa a Enumerarte de una app de adivinación.
  */
-export function CalculationPanel({ birthDate }: { birthDate: CalendarDate }) {
+export function CalculationPanel({
+  birthDate,
+  subject = "Camino de Vida",
+}: {
+  birthDate: CalendarDate;
+  subject?: string;
+}) {
   const explanation = explainMision(birthDate, { day: "Día", month: "Mes", year: "Año" });
 
   return (
@@ -21,7 +27,7 @@ export function CalculationPanel({ birthDate }: { birthDate: CalendarDate }) {
       }}
     >
       <summary className="cursor-pointer list-none text-sm text-mist-500 transition hover:text-mist-300">
-        <span className="group-open:hidden">Ver cómo se calculó tu número</span>
+        <span className="group-open:hidden">Ver cómo se calcula tu {subject}</span>
         <span className="hidden group-open:inline">Ocultar el cálculo</span>
       </summary>
 

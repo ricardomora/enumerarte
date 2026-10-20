@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   metadataBase: siteUrl(),
   title: "Enumerarte · Tu mapa y tus vínculos",
   description:
-    "Descubre tu Núcleo, Alma, Escudo y Destino. Entiende la conexión con tu pareja, familia y amigos.",
+    "Descubre tu Camino de Vida, tu Personalidad, tu Alma y tu Expresión. Entiende la conexión con tu pareja, familia y amigos.",
   openGraph: {
     title: "Enumerarte",
     description: "Tu mapa. Tus vínculos. Tus señales.",

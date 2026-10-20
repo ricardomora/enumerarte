@@ -296,7 +296,7 @@ export const shields: Record<string, ShieldContent> = {
     value: 1,
     title: "La cara de quien no duda",
     essence: "A simple vista pareces seguro antes de que pregunten.",
-    body: "Llegas con postura de quien ya decidió, aunque por dentro todavía estés probando. La gente te lee como líder natural y a veces te asigna responsabilidades que no pediste. Tu escudo protege la vulnerabilidad de no saber; también te aísla cuando necesitarías decir 'todavía no'.",
+    body: "Llegas con postura de quien ya decidió, aunque por dentro todavía estés probando. La gente te lee como líder natural y a veces te asigna responsabilidades que no pediste. Tu personalidad protege la vulnerabilidad de no saber; también te aísla cuando necesitarías decir 'todavía no'.",
     strengths: [
       "En una reunión nueva tomas la palabra cuando el silencio se alarga.",
       "Proyectas dirección clara aunque el plan todavía esté en borrador.",
@@ -308,9 +308,9 @@ export const shields: Record<string, ShieldContent> = {
       "Confundes firmeza pública con no tener derecho a cambiar de idea.",
     ],
     underPressure:
-      "Tu tono se vuelve más cortante y tu cuerpo ocupa más espacio. El escudo dice 'yo me encargo'; por dentro puede haber cansancio de ser el que siempre empuja.",
+      "Tu tono se vuelve más cortante y tu cuerpo ocupa más espacio. La personalidad dice 'yo me encargo'; por dentro puede haber cansancio de ser el que siempre empuja.",
     inRelationships:
-      "Pareces independiente hasta el punto de que pocos ofrecen ayuda. Si quieres cercanía, tienes que bajar explícitamente el escudo con frases como 'hoy no tengo claro qué hacer'.",
+      "Pareces independiente hasta el punto de que pocos ofrecen ayuda. Si quieres cercanía, tienes que decirlo explícitamente, con frases como 'hoy no tengo claro qué hacer'.",
     blindSpot:
       "Crees que mostrar duda te resta respeto, pero a veces la gente se acerca más cuando admites que también te cuesta.",
     microPractice:
@@ -320,7 +320,7 @@ export const shields: Record<string, ShieldContent> = {
     value: 2,
     title: "La sonrisa que desarma",
     essence: "A simple vista pareces fácil de tratar y poco conflictivo.",
-    body: "Llegas suavizando el ambiente: preguntas, escuchas, adaptas el tono. La gente te percibe como puente y a veces descarga contigo lo que no le diría a otros. Tu escudo es amable; también puede esconder que ya tienes una opinión firme.",
+    body: "Llegas suavizando el ambiente: preguntas, escuchas, adaptas el tono. La gente te percibe como puente y a veces descarga contigo lo que no le diría a otros. Tu personalidad es amable; también puede esconder que ya tienes una opinión firme.",
     strengths: [
       "En grupos nuevos reduces la tensión antes de que alguien la nombre.",
       "Haces sentir cómodo a quien llega tarde o no conoce a nadie.",
@@ -344,7 +344,7 @@ export const shields: Record<string, ShieldContent> = {
     value: 3,
     title: "El brillo que llena la sala",
     essence: "A simple vista pareces liviano y fácil de querer.",
-    body: "Entras con energía, chiste o comentario que alivia. La gente te recuerda como 'el divertido' o 'la que anima', y eso abre puertas sociales rápido. Tu escudo brilla; también puede ocultar que no siempre quieres ser el centro.",
+    body: "Entras con energía, chiste o comentario que alivia. La gente te recuerda como 'el divertido' o 'la que anima', y eso abre puertas sociales rápido. Tu personalidad brilla; también puede ocultar que no siempre quieres ser el centro.",
     strengths: [
       "Rompe el hielo en contextos incómodos con una frase bien colocada.",
       "Haces que otros hablen mostrando entusiasmo por lo que cuentan.",
@@ -356,7 +356,7 @@ export const shields: Record<string, ShieldContent> = {
       "Agotas energía social y luego desapareces sin explicación.",
     ],
     underPressure:
-      "Subes el volumen: más risas, más historias, más movimiento. El escudo evita que vean miedo o tristeza; también retrasa ayuda real.",
+      "Subes el volumen: más risas, más historias, más movimiento. La personalidad evita que vean miedo o tristeza; también retrasa ayuda real.",
     inRelationships:
       "Pareces despreocupado y eso puede hacer que no pregunten cómo estás de verdad. Si quieres profundidad, tendrás que bajar el espectáculo a propósito.",
     blindSpot:
@@ -368,7 +368,7 @@ export const shields: Record<string, ShieldContent> = {
     value: 4,
     title: "La calma que ordena",
     essence: "A simple vista pareces confiable y difícil de sorprender.",
-    body: "Llegas con ropa, horario y actitud de quien tiene las cosas bajo control. La gente te asigna tareas concretas porque proyectas solidez. Tu escudo transmite orden; también puede hacer que no vean cuando estás abrumado.",
+    body: "Llegas con ropa, horario y actitud de quien tiene las cosas bajo control. La gente te asigna tareas concretas porque proyectas solidez. Tu personalidad transmite orden; también puede hacer que no vean cuando estás abrumado.",
     strengths: [
       "En caos ajeno eres quien pregunta '¿qué sigue?' con tono estable.",
       "Das sensación de que cumplirás aunque nadie te persiga.",
@@ -380,7 +380,7 @@ export const shields: Record<string, ShieldContent> = {
       "Te cuesta pedir flexibilidad porque rompe la imagen de persona confiable.",
     ],
     underPressure:
-      "Te vuelves más formal, más breve y más literal. El escudo dice 'todo bajo control'; por dentro puede haber alarma por lo imprevisto.",
+      "Te vuelves más formal, más breve y más literal. La personalidad dice 'todo bajo control'; por dentro puede haber alarma por lo imprevisto.",
     inRelationships:
       "Pareces predecible y eso tranquiliza, pero también puede aburrir o hacer que asuman que nunca quieres sorpresas. Necesitas señalar cuándo sí las quieres.",
     blindSpot:
@@ -392,7 +392,7 @@ export const shields: Record<string, ShieldContent> = {
     value: 5,
     title: "La chispa que contagia",
     essence: "A simple vista pareces libre y difícil de encasillar.",
-    body: "Llegas con historias, planes nuevos o energía de movimiento. La gente te lee como alguien que conoce sitios, personas y posibilidades. Tu escudo es atractivo; también puede hacer que subestimen tu capacidad de compromiso.",
+    body: "Llegas con historias, planes nuevos o energía de movimiento. La gente te lee como alguien que conoce sitios, personas y posibilidades. Tu personalidad es atractiva; también puede hacer que subestimen tu capacidad de compromiso.",
     strengths: [
       "Abres conversaciones con desconocidos más rápido que la mayoría.",
       "Transmites que hay salida cuando otros solo ven callejón.",
@@ -404,7 +404,7 @@ export const shields: Record<string, ShieldContent> = {
       "Te aburres de roles fijos y cambias de registro sin avisar.",
     ],
     underPressure:
-      "Te mueves más: mensajes, viajes, ideas, contactos. El escudo dice 'nada me ata'; por dentro puede haber miedo a quedarte quieto con lo que duele.",
+      "Te mueves más: mensajes, viajes, ideas, contactos. La personalidad dice 'nada me ata'; por dentro puede haber miedo a quedarte quieto con lo que duele.",
     inRelationships:
       "Pareces independiente y eso atrae, pero también puede generar inseguridad si no explicas cuándo vas a volver o qué significa tu silencio.",
     blindSpot:
@@ -416,7 +416,7 @@ export const shields: Record<string, ShieldContent> = {
     value: 6,
     title: "El refugio visible",
     essence: "A simple vista pareces alguien a quien acudir cuando algo falla.",
-    body: "Llegas con actitud de cuidado: preguntas, ofreces, recuerdas lo importante. La gente te ve como hogar emocional antes de conocerte del todo. Tu escudo es generoso; también invita a que te usen sin preguntarte qué necesitas.",
+    body: "Llegas con actitud de cuidado: preguntas, ofreces, recuerdas lo importante. La gente te ve como hogar emocional antes de conocerte del todo. Tu personalidad es generosa; también invita a que te usen sin preguntarte qué necesitas.",
     strengths: [
       "En crisis ajena eres quien aparece con algo concreto, no solo con 'cuenta conmigo'.",
       "Haces sentir bienvenido a quien se siente fuera de lugar.",
@@ -428,7 +428,7 @@ export const shields: Record<string, ShieldContent> = {
       "Te cuesta mostrar enfado porque rompe la imagen de persona buena.",
     ],
     underPressure:
-      "Sigues sosteniendo a otros con sonrisa cansada. El escudo dice 'aquí estoy'; por dentro puede haber saturación.",
+      "Sigues sosteniendo a otros con sonrisa cansada. La personalidad dice 'aquí estoy'; por dentro puede haber saturación.",
     inRelationships:
       "Pareces el adulto emocional del vínculo. Si no pides cuidado también, tu pareja puede creer que no lo necesitas.",
     blindSpot:
@@ -440,7 +440,7 @@ export const shields: Record<string, ShieldContent> = {
     value: 7,
     title: "La distancia elegante",
     essence: "A simple vista pareces selectivo y difícil de leer.",
-    body: "Llegas con reserva: mirada atenta, palabras medidas, poco teatro. La gente te percibe como inteligente o misterioso antes de saber si eres cercano. Tu escudo filtra; también puede hacer que otros no se acerquen por miedo a molestar.",
+    body: "Llegas con reserva: mirada atenta, palabras medidas, poco teatro. La gente te percibe como inteligente o misterioso antes de saber si eres cercano. Tu personalidad filtra; también puede hacer que otros no se acerquen por miedo a molestar.",
     strengths: [
       "No llenas el espacio con ruido innecesario en conversaciones densas.",
       "Das sensación de profundidad aunque aún no hayas contado mucho.",
@@ -452,7 +452,7 @@ export const shields: Record<string, ShieldContent> = {
       "Te cuesta mostrar entusiasmo porque suena a compromiso.",
     ],
     underPressure:
-      "Te retiras más: respuestas cortas, menos contacto visual, más tiempo solo. El escudo dice 'no necesito a nadie'; por dentro puede haber sobrecarga.",
+      "Te retiras más: respuestas cortas, menos contacto visual, más tiempo solo. La personalidad dice 'no necesito a nadie'; por dentro puede haber sobrecarga.",
     inRelationships:
       "Pareces autónomo al extremo. Si quieres cercanía, tendrás que dar señales explícitas de que sí quieres compañía, no solo tolerarla.",
     blindSpot:
@@ -464,7 +464,7 @@ export const shields: Record<string, ShieldContent> = {
     value: 8,
     title: "La presencia que ocupa espacio",
     essence: "A simple vista pareces alguien que sabe lo que quiere.",
-    body: "Llegas con energía de resultado: mirada directa, agenda clara, poco tiempo para rodeos. La gente te lee como competente y exigente antes de conocer tu lado blando. Tu escudo impone respeto; también puede intimidar.",
+    body: "Llegas con energía de resultado: mirada directa, agenda clara, poco tiempo para rodeos. La gente te lee como competente y exigente antes de conocer tu lado blando. Tu personalidad impone respeto; también puede intimidar.",
     strengths: [
       "En negociaciones informales nombras lo importante sin dar vueltas.",
       "Proyectas que cumplirás lo que prometes.",
@@ -476,7 +476,7 @@ export const shields: Record<string, ShieldContent> = {
       "Te cuesta mostrar cansancio porque suena a debilidad.",
     ],
     underPressure:
-      "Tu voz baja, tu ritmo acelera y tu paciencia cae. El escudo dice 'sigo al mando'; por dentro puede haber miedo a perder estatus.",
+      "Tu voz baja, tu ritmo acelera y tu paciencia cae. La personalidad dice 'sigo al mando'; por dentro puede haber miedo a perder estatus.",
     inRelationships:
       "Pareces fuerte y eso atrae, pero también puede hacer que no ofrezcan apoyo emocional. Si lo necesitas, pídelo con claridad, no con indirecciones.",
     blindSpot:
@@ -488,7 +488,7 @@ export const shields: Record<string, ShieldContent> = {
     value: 9,
     title: "La mirada compasiva",
     essence: "A simple vista pareces maduro y poco demandante.",
-    body: "Llegas con apertura: escuchas, comprendes, no juzgas rápido. La gente te confía cosas pronto porque proyectas amplitud emocional. Tu escudo es generoso; también puede ocultar que tienes límites propios.",
+    body: "Llegas con apertura: escuchas, comprendes, no juzgas rápido. La gente te confía cosas pronto porque proyectas amplitud emocional. Tu personalidad es generosa; también puede ocultar que tienes límites propios.",
     strengths: [
       "Haces cómodo a quien habla de temas incómodos sin dramatizar.",
       "Conectas con contextos culturales o familiares distintos al tuyo.",
@@ -500,7 +500,7 @@ export const shields: Record<string, ShieldContent> = {
       "Te cuesta poner límites porque temes parecer menos empático.",
     ],
     underPressure:
-      "Te vuelves más filosófico o más distante. El escudo dice 'ya pasé por peor'; por dentro puede haber saturación no nombrada.",
+      "Te vuelves más filosófico o más distante. La personalidad dice 'ya pasé por peor'; por dentro puede haber saturación no nombrada.",
     inRelationships:
       "Pareces fácil de amar y difícil de conocer en lo tuyo. Si no compartes necesidades concretas, tu pareja puede creer que solo das.",
     blindSpot:
@@ -512,7 +512,7 @@ export const shields: Record<string, ShieldContent> = {
     value: 11,
     title: "La intensidad contenida",
     essence: "A simple vista pareces perceptivo y un poco apartado.",
-    body: "Llegas con una presencia que nota más de lo que dices. La gente siente que los lees y a veces se incomoda antes de saber por qué. Tu escudo es fino y alerta; también te deja expuesto a absorbir demasiado del ambiente.",
+    body: "Llegas con una presencia que nota más de lo que dices. La gente siente que los lees y a veces se incomoda antes de saber por qué. Tu personalidad es fina y alerta; también te deja expuesto a absorbir demasiado del ambiente.",
     strengths: [
       "Captas dinámicas de grupo que nadie ha verbalizado todavía.",
       "Inspiras confianza en temas delicados sin forzar intimidad.",
@@ -524,7 +524,7 @@ export const shields: Record<string, ShieldContent> = {
       "Confundes cansancio sensorial con falta de interés social.",
     ],
     underPressure:
-      "Te vuelves más silencioso o más eléctrico, sin término medio. El escudo protege tu sistema nervioso; por fuera puede leerse como humor cambiante.",
+      "Te vuelves más silencioso o más eléctrico, sin término medio. La personalidad protege tu sistema nervioso; por fuera puede leerse como humor cambiante.",
     inRelationships:
       "Pareces profundo y frágil a la vez. Necesitas explicar cuándo te retiras para recargar, no para castigar.",
     blindSpot:
@@ -536,7 +536,7 @@ export const shields: Record<string, ShieldContent> = {
     value: 22,
     title: "La solidez que impone respeto",
     essence: "A simple vista pareces hecho para proyectos grandes.",
-    body: "Llegas con presencia de quien piensa a largo plazo: estructura, visión, poco drama. La gente te asigna responsabilidad antes de comprobar si la quieres. Tu escudo es imponente; también puede ocultar dudas legítimas.",
+    body: "Llegas con presencia de quien piensa a largo plazo: estructura, visión, poco drama. La gente te asigna responsabilidad antes de comprobar si la quieres. Tu personalidad es imponente; también puede ocultar dudas legítimas.",
     strengths: [
       "En contextos profesionales transmites que sabes sostener algo complejo.",
       "Haces que ideas ambiciosas suenen posibles, no fantasiosas.",
@@ -548,7 +548,7 @@ export const shields: Record<string, ShieldContent> = {
       "Proyectas perfección y luego te castigas en privado.",
     ],
     underPressure:
-      "Te vuelves más rígido y menos accesible. El escudo dice 'aguanto todo'; por dentro puede haber miedo al colapso visible.",
+      "Te vuelves más rígido y menos accesible. La personalidad dice 'aguanto todo'; por dentro puede haber miedo al colapso visible.",
     inRelationships:
       "Pareces inquebrantable y eso aleja ofertas de ayuda. Si quieres apoyo, tendrás que mostrar una grieta real, no solo cansancio funcional.",
     blindSpot:
@@ -560,7 +560,7 @@ export const shields: Record<string, ShieldContent> = {
     value: 33,
     title: "La calidez que acoge",
     essence: "A simple vista pareces luz emocional en cualquier grupo.",
-    body: "Llegas con tono cálido, mirada atenta y disposición a escuchar. La gente te busca para desahogarse aunque apenas te conozcan. Tu escudo es acogedor; también puede invitar a sobrecarga emocional ajena.",
+    body: "Llegas con tono cálido, mirada atenta y disposición a escuchar. La gente te busca para desahogarse aunque apenas te conozcan. Tu personalidad es acogedora; también puede invitar a sobrecarga emocional ajena.",
     strengths: [
       "Haces sentir seguro a quien teme ser juzgado.",
       "Explicas sin condescender cuando alguien no entiende.",
@@ -572,7 +572,7 @@ export const shields: Record<string, ShieldContent> = {
       "Te cuesta poner fin a conversaciones que ya te drenaron.",
     ],
     underPressure:
-      "Sigues sonriendo y conteniendo aunque estés al límite. El escudo dice 'puedo con esto'; por dentro puede haber vacío.",
+      "Sigues sonriendo y conteniendo aunque estés al límite. La personalidad dice 'puedo con esto'; por dentro puede haber vacío.",
     inRelationships:
       "Pareces el cuidador natural del vínculo. Si no negocias reciprocidad, acabas resentido por dar lo que nadie pidió explícitamente.",
     blindSpot:

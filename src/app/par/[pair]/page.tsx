@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { NumberGlyph } from "@/components/number-glyph";
 import { ShareArrival } from "@/components/share-arrival";
+import { SiteFooter } from "@/components/site-footer";
 import { getMission, getPair } from "@/content";
 import { allPairKeys, parsePairKey } from "@/lib/numerology";
 import { sanitizeShareName } from "@/lib/share";
@@ -106,7 +107,7 @@ export default async function PairPage(props: PageProps<"/par/[pair]">) {
         <div className="space-y-1">
           <h2 className="text-balance text-lg font-medium text-mist-100">¿Y tu mapa?</h2>
           <p className="text-sm text-mist-500">
-            Descubre tu Núcleo y mira qué señales conectan con las personas de tu vida.
+            Descubre tu Camino de Vida y mira qué señales conectan con las personas de tu vida.
           </p>
         </div>
         <Link
@@ -117,9 +118,7 @@ export default async function PairPage(props: PageProps<"/par/[pair]">) {
         </Link>
       </section>
 
-      <footer className="mt-12 text-center text-xs text-mist-500">
-        Enumerarte · Tu mapa y tus vínculos
-      </footer>
+      <SiteFooter className="mt-12" note="Enumerarte · Tu mapa y tus vínculos" />
     </main>
   );
 }

@@ -65,6 +65,9 @@ export default async function Image({ params }: { params: Promise<{ pair: string
       >
         Enumerarte
       </div>
+      <div style={{ display: "flex", marginTop: 28, fontSize: 32, color: "#c8c4d8" }}>
+        Te comparten esta conexión
+      </div>
 
       {parsed ? (
         <div style={{ display: "flex", alignItems: "center", gap: 48, marginTop: 48 }}>

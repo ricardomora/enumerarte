@@ -15,7 +15,7 @@ const POSTHOG_HOST = process.env.POSTHOG_HOST ?? "https://us.i.posthog.com";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export async function POST(request: Request) {
-  let payload: { email?: unknown; visitorId?: unknown; mision?: unknown };
+  let payload: { email?: unknown; visitorId?: unknown; mision?: unknown; intent?: unknown };
   try {
     payload = await request.json();
   } catch {
@@ -32,8 +32,15 @@ export async function POST(request: Request) {
       ? payload.visitorId
       : email;
 
+  const intent = payload.intent === "subscribe" ? "subscribe" : "lead";
+
   console.log(
-    JSON.stringify({ type: "lead", email, mision: payload.mision, at: new Date().toISOString() }),
+    JSON.stringify({
+      type: intent,
+      email,
+      mision: payload.mision,
+      at: new Date().toISOString(),
+    }),
   );
 
   const apiKey = process.env.POSTHOG_KEY;
@@ -44,10 +51,11 @@ export async function POST(request: Request) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           api_key: apiKey,
-          event: "email_captured",
+          event: intent === "subscribe" ? "subscribed" : "email_captured",
           distinct_id: distinctId,
           properties: {
             mision: payload.mision,
+            intent,
             $set: { email },
           },
         }),

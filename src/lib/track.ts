@@ -21,6 +21,8 @@ export type TrackEvent =
   | "second_person_added"
   | "pair_viewed"
   | "email_captured"
+  /** Quiere novedades y el aviso de cuando la app esté lista. */
+  | "subscribed"
   /** Puerta falsa: clic en un precio para un producto que todavía no existe. */
   | "price_clicked"
   /** Alguien decide difundir su lectura. Entrada del bucle viral. */

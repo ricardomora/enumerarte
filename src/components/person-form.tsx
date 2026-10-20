@@ -1,12 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
-import {
-  isFutureDate,
-  parseDateInput,
-  toDateInputValue,
-  todayCalendarDate,
-} from "@/lib/date-input";
+import { isFutureDate, todayCalendarDate } from "@/lib/date-input";
 import { type CalendarDate, isValidDate } from "@/lib/numerology";
 
 export interface PersonInput {
@@ -21,8 +16,29 @@ interface PersonFormProps {
   nameLabel?: string;
   requireFullName?: boolean;
   submitLabel: string;
+  initial?: PersonInput;
   onSubmit: (person: PersonInput) => void;
 }
+
+const MONTHS = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
+] as const;
+
+const FIRST_YEAR = 1900;
+
+const fieldClass =
+  "w-full rounded-xl border border-ink-700 bg-ink-900 px-3 py-3 text-sm text-mist-100 outline-none transition focus:border-accent-500 focus:ring-2 focus:ring-accent-500/25";
 
 export function PersonForm({
   title,
@@ -31,24 +47,48 @@ export function PersonForm({
   nameLabel = "Nombre",
   requireFullName = false,
   submitLabel,
+  initial,
   onSubmit,
 }: PersonFormProps) {
+  const dayId = useId();
+  const monthId = useId();
+  const yearId = useId();
   const nameId = useId();
-  const dateId = useId();
-  const [name, setName] = useState("");
-  const [date, setDate] = useState("");
+  const [name, setName] = useState(initial?.name ?? "");
+  const [day, setDay] = useState(initial ? String(initial.birthDate.day) : "");
+  const [month, setMonth] = useState(initial ? String(initial.birthDate.month) : "");
+  const [year, setYear] = useState(initial ? String(initial.birthDate.year) : "");
   const [error, setError] = useState<string | null>(null);
 
-  // El tope del selector se fija tras montar, nunca durante el renderizado.
-  // Esta página se prerenderiza, así que calcular "hoy" en el servidor lo
-  // congelaría en la fecha del build y rompería la hidratación al día siguiente.
-  const [maxDate, setMaxDate] = useState<string | undefined>(undefined);
+  // El último año se fija tras montar. Calcular "hoy" en el servidor lo
+  // congelaría en la fecha del build.
+  const [maxYear, setMaxYear] = useState<number | null>(null);
   useEffect(() => {
-    setMaxDate(toDateInputValue(todayCalendarDate()));
+    setMaxYear(todayCalendarDate().year);
   }, []);
+
+  const years = maxYear
+    ? Array.from({ length: maxYear - FIRST_YEAR + 1 }, (_, index) => maxYear - index)
+    : [];
 
   function handleSubmit(formEvent: React.FormEvent<HTMLFormElement>) {
     formEvent.preventDefault();
+
+    if (!day || !month || !year) {
+      setError("Elige día, mes y año.");
+      return;
+    }
+
+    const birthDate = { day: Number(day), month: Number(month), year: Number(year) };
+    if (!isValidDate(birthDate)) {
+      setError("Revisa la fecha: no parece un día real.");
+      return;
+    }
+
+    if (isFutureDate(birthDate)) {
+      setError("Esa fecha está en el futuro.");
+      return;
+    }
 
     const trimmed = name.trim();
     if (trimmed.length < 2) {
@@ -64,21 +104,8 @@ export function PersonForm({
       }
     }
 
-    const parsed = parseDateInput(date);
-    if (!parsed || !isValidDate(parsed)) {
-      setError("Revisa la fecha: no parece un día real.");
-      return;
-    }
-
-    // El atributo `max` es solo una ayuda del selector y se puede saltar
-    // escribiendo la fecha a mano, así que el rechazo real ocurre aquí.
-    if (isFutureDate(parsed)) {
-      setError("Esa fecha está en el futuro.");
-      return;
-    }
-
     setError(null);
-    onSubmit({ name: trimmed, birthDate: parsed });
+    onSubmit({ name: trimmed, birthDate });
   }
 
   return (
@@ -88,36 +115,69 @@ export function PersonForm({
         {hint ? <p className="text-sm text-mist-500">{hint}</p> : null}
       </div>
 
-      <div className="space-y-3">
-        <div className="space-y-1.5">
-          <label htmlFor={nameId} className="block text-xs uppercase tracking-wider text-mist-500">
-            {nameLabel}
-          </label>
-          <input
-            id={nameId}
-            type="text"
-            value={name}
-            onChange={(inputEvent) => setName(inputEvent.target.value)}
-            placeholder={namePlaceholder}
-            autoComplete="off"
-            className="w-full rounded-xl border border-ink-700 bg-ink-900 px-4 py-3 text-mist-100 outline-none transition placeholder:text-ink-600 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/25"
-          />
+      <fieldset className="space-y-1.5">
+        <legend className="text-xs uppercase tracking-wider text-mist-500">
+          Fecha de nacimiento
+        </legend>
+        <div className="grid grid-cols-3 gap-2">
+          <select
+            id={dayId}
+            aria-label="Día"
+            value={day}
+            onChange={(event) => setDay(event.target.value)}
+            className={fieldClass}
+          >
+            <option value="">Día</option>
+            {Array.from({ length: 31 }, (_, index) => index + 1).map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+          <select
+            id={monthId}
+            aria-label="Mes"
+            value={month}
+            onChange={(event) => setMonth(event.target.value)}
+            className={fieldClass}
+          >
+            <option value="">Mes</option>
+            {MONTHS.map((label, index) => (
+              <option key={label} value={index + 1}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <select
+            id={yearId}
+            aria-label="Año"
+            value={year}
+            onChange={(event) => setYear(event.target.value)}
+            className={fieldClass}
+          >
+            <option value="">Año</option>
+            {years.map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
         </div>
+      </fieldset>
 
-        <div className="space-y-1.5">
-          <label htmlFor={dateId} className="block text-xs uppercase tracking-wider text-mist-500">
-            Fecha de nacimiento
-          </label>
-          <input
-            id={dateId}
-            type="date"
-            value={date}
-            max={maxDate}
-            min="1900-01-01"
-            onChange={(inputEvent) => setDate(inputEvent.target.value)}
-            className="w-full rounded-xl border border-ink-700 bg-ink-900 px-4 py-3 text-mist-100 outline-none transition focus:border-accent-500 focus:ring-2 focus:ring-accent-500/25"
-          />
-        </div>
+      <div className="space-y-1.5">
+        <label htmlFor={nameId} className="block text-xs uppercase tracking-wider text-mist-500">
+          {nameLabel}
+        </label>
+        <input
+          id={nameId}
+          type="text"
+          value={name}
+          onChange={(inputEvent) => setName(inputEvent.target.value)}
+          placeholder={namePlaceholder}
+          autoComplete="name"
+          className="w-full rounded-xl border border-ink-700 bg-ink-900 px-4 py-3 text-mist-100 outline-none transition placeholder:text-ink-600 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/25"
+        />
       </div>
 
       {error ? (

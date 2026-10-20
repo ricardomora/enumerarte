@@ -16,7 +16,7 @@ export const LOCALES = ["es", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "es";
 
-/** Lectura estructurada compartida por Núcleo, Alma, Escudo y Destino. */
+/** Lectura estructurada compartida por Camino de Vida, Personalidad, Alma y Expresión. */
 export interface AspectReading {
   value: NumerologyValue;
   /** Nombre corto del arquetipo. Es lo que el usuario comparte. */

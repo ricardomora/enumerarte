@@ -2,14 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { EmailCapture } from "@/components/email-capture";
+import {
+  LinkPersonForm,
+  type LinkPersonInput,
+  RELATION_LABELS,
+} from "@/components/link-person-form";
 import { PairCard } from "@/components/pair-card";
 import { PersonForm, type PersonInput } from "@/components/person-form";
 import { PriceGate } from "@/components/price-gate";
 import { ProfileMap } from "@/components/profile-map";
-import { ShareButtons } from "@/components/share-buttons";
+import { RelationMap } from "@/components/relation-map";
 import { StickyFlowAction } from "@/components/sticky-flow-action";
+import { formatDate } from "@/lib/date-input";
 import { FREE_LINK_LIMIT } from "@/lib/limits";
-import { computeProfile, type NameNumbers, type NumerologyValue } from "@/lib/numerology";
+import {
+  computeProfile,
+  type NameNumbers,
+  type NumerologyValue,
+  type RelationshipType,
+} from "@/lib/numerology";
+import { buildPairPath } from "@/lib/share";
 import { track } from "@/lib/track";
 
 type Step = "self" | "mission" | "other" | "pair";
@@ -19,7 +31,9 @@ interface Person extends PersonInput {
   nameNumbers: NameNumbers | null;
 }
 
-type OtherFormMode = { kind: "add" } | { kind: "replace"; index: number };
+interface LinkedPerson extends Person {
+  relationship: RelationshipType;
+}
 
 function resolvePerson(person: PersonInput): Person {
   const profile = computeProfile({ birthDate: person.birthDate, fullName: person.name });
@@ -30,6 +44,11 @@ function resolvePerson(person: PersonInput): Person {
   };
 }
 
+function personLabel(person: LinkedPerson): string {
+  const trimmed = person.name.trim();
+  return trimmed ? firstName(trimmed) : RELATION_LABELS[person.relationship];
+}
+
 /** Solo el primer nombre: es como la gente se refiere a los suyos. */
 function firstName(name: string): string {
   return name.trim().split(/\s+/)[0];
@@ -38,9 +57,9 @@ function firstName(name: string): string {
 export function ReadingFlow() {
   const [step, setStep] = useState<Step>("self");
   const [self, setSelf] = useState<Person | null>(null);
-  const [linked, setLinked] = useState<Person[]>([]);
+  const [linked, setLinked] = useState<LinkedPerson[]>([]);
   const [viewIndex, setViewIndex] = useState(0);
-  const [otherFormMode, setOtherFormMode] = useState<OtherFormMode>({ kind: "add" });
+  const [formReturn, setFormReturn] = useState<"mission" | "pair">("mission");
 
   const atLinkLimit = linked.length >= FREE_LINK_LIMIT;
   const activeOther = linked[viewIndex] ?? null;
@@ -61,24 +80,14 @@ export function ReadingFlow() {
     setStep("mission");
   }
 
-  function handleOther(person: PersonInput) {
-    const resolved = resolvePerson(person);
-
-    if (otherFormMode.kind === "replace") {
-      setLinked((current) =>
-        current.map((entry, index) => (index === otherFormMode.index ? resolved : entry)),
-      );
-      setViewIndex(otherFormMode.index);
-      setStep("pair");
-      return;
-    }
-
+  function handleLink(input: LinkPersonInput) {
     if (linked.length >= FREE_LINK_LIMIT) {
       track("price_clicked", { tier: "premium", reason: "link_limit" });
-      setStep("pair");
+      setStep(activeOther ? "pair" : "mission");
       return;
     }
 
+    const resolved: LinkedPerson = { ...resolvePerson(input), relationship: input.relationship };
     const nextLinked = [...linked, resolved];
     setLinked(nextLinked);
     setViewIndex(nextLinked.length - 1);
@@ -86,8 +95,10 @@ export function ReadingFlow() {
       mision: resolved.mision,
       selfMision: self?.mision,
       linkCount: nextLinked.length,
+      relationship: resolved.relationship,
     });
     setStep("pair");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function startAddOther() {
@@ -95,132 +106,169 @@ export function ReadingFlow() {
       track("price_clicked", { tier: "premium", reason: "link_limit" });
       return;
     }
-    setOtherFormMode({ kind: "add" });
+    setFormReturn(step === "pair" ? "pair" : "mission");
     setStep("other");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function startReplaceOther(index: number) {
-    setOtherFormMode({ kind: "replace", index });
-    setStep("other");
+  function goBack() {
+    if (step === "other") {
+      setStep(formReturn);
+    } else if (step === "pair") {
+      setStep("mission");
+    } else {
+      setStep("self");
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-ink-700 bg-ink-900/40 backdrop-blur-sm">
-      <div className="p-5 sm:p-7">
-        {step === "self" ? (
-          <PersonForm
-            title="Descubre tu mapa"
-            hint="Nombre completo y fecha de nacimiento. Sin registro, sin contraseña — solo tu señal personal."
-            nameLabel="Nombre completo"
-            namePlaceholder="Nombre y apellidos"
-            requireFullName
-            submitLabel="Revelar mi mapa"
-            onSubmit={handleSelf}
-          />
-        ) : null}
+    <div className="flex flex-1 flex-col">
+      {step !== "self" ? (
+        <button
+          type="button"
+          onClick={goBack}
+          className="mb-4 inline-flex w-fit items-center gap-1.5 text-sm text-mist-300 transition hover:text-mist-100"
+        >
+          <ArrowLeft />
+          {step === "mission"
+            ? "Volver al inicio"
+            : step === "pair"
+              ? "Volver a tu mapa"
+              : "Volver"}
+        </button>
+      ) : null}
 
-        {step === "mission" && self ? (
-          <div className="space-y-6 pb-2">
-            <ProfileMap
-              name={self.name}
-              birthDate={self.birthDate}
-              mision={self.mision}
-              nameNumbers={self.nameNumbers}
-            />
+      <header className="space-y-3 text-center">
+        <p className="font-mono text-sm uppercase tracking-[0.3em] text-accent-400">Enumerarte</p>
+        <h1 className="relative text-balance text-2xl font-medium leading-tight text-[#f5a524] sm:text-4xl">
+          <span
+            aria-hidden
+            className="absolute top-1/2 left-1/2 -z-10 h-16 w-[min(100%,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f5a524]/35 blur-3xl"
+          />
+          Tu mapa. Tus vínculos. Tus señales.
+        </h1>
+        {step === "self" || !self ? (
+          <p className="mx-auto max-w-md text-pretty text-sm leading-relaxed text-mist-300 sm:text-base">
+            Descubre lo que dicen tus números sobre ti y sobre quienes te importan. Sin hora de
+            nacimiento. Sin registro y sin login.
+          </p>
+        ) : (
+          <div className="space-y-1">
+            <p className="text-base text-mist-100">{self.name}</p>
+            <p className="text-sm text-mist-300">{formatDate(self.birthDate)}</p>
           </div>
-        ) : null}
+        )}
+      </header>
 
-        {step === "other" && self ? (
-          <PersonForm
-            title={
-              otherFormMode.kind === "replace"
-                ? `Cambiar a ${firstName(linked[otherFormMode.index]?.name ?? "esta persona")}`
-                : `¿Quién es esa persona, ${firstName(self.name)}?`
-            }
-            hint={
-              otherFormMode.kind === "add" && linked.length === FREE_LINK_LIMIT - 1
-                ? `Tu ${FREE_LINK_LIMIT}ª conexión gratis. Para todo tu círculo, Premium viene en camino.`
-                : "Nombre y fecha — con eso vemos la dinámica entre ustedes dos."
-            }
-            namePlaceholder="Su nombre"
-            submitLabel="Ver la conexión"
-            onSubmit={handleOther}
-          />
-        ) : null}
+      <section className="mt-6 flex-1">
+        <div className="overflow-hidden rounded-2xl border border-ink-700 bg-ink-900/40 backdrop-blur-sm">
+          <div className="p-5 sm:p-7">
+            {step === "self" ? (
+              <PersonForm
+                title="Descubre tu mapa"
+                hint="Primero tu fecha. Después tu nombre completo."
+                nameLabel="Nombre completo"
+                namePlaceholder="Nombre y apellidos"
+                requireFullName
+                submitLabel="Revelar mi mapa"
+                initial={self ?? undefined}
+                onSubmit={handleSelf}
+              />
+            ) : null}
 
-        {step === "pair" && self && activeOther ? (
-          <div className="space-y-8">
-            {linked.length > 1 ? (
-              <div className="flex flex-wrap gap-2" role="tablist" aria-label="Personas vinculadas">
-                {linked.map((person, index) => (
-                  <button
-                    key={`${person.name}-${person.birthDate.year}-${person.birthDate.month}-${person.birthDate.day}`}
-                    type="button"
-                    role="tab"
-                    aria-selected={index === viewIndex}
-                    onClick={() => setViewIndex(index)}
-                    className={`rounded-full px-4 py-2 text-sm transition ${
-                      index === viewIndex
-                        ? "bg-accent-500/20 text-mist-100 ring-1 ring-accent-500/50"
-                        : "bg-ink-900/60 text-mist-500 hover:text-mist-300"
-                    }`}
-                  >
-                    Con {firstName(person.name)}
-                  </button>
-                ))}
+            {step === "mission" && self ? (
+              <ProfileMap
+                name={self.name}
+                birthDate={self.birthDate}
+                mision={self.mision}
+                nameNumbers={self.nameNumbers}
+              />
+            ) : null}
+
+            {step === "other" && self ? (
+              <div className="space-y-4">
+                {linked.length === FREE_LINK_LIMIT - 1 ? (
+                  <p className="text-sm text-mist-500">
+                    Tu {FREE_LINK_LIMIT}ª conexión gratis. Para todo tu círculo, Premium viene en
+                    camino.
+                  </p>
+                ) : null}
+                <LinkPersonForm
+                  submitLabel="Ver la conexión"
+                  onSubmit={handleLink}
+                  onCancel={goBack}
+                />
               </div>
             ) : null}
 
-            <PairCard
-              self={{ name: firstName(self.name), mision: self.mision }}
-              other={{ name: firstName(activeOther.name), mision: activeOther.mision }}
-            />
-
-            <div className="space-y-8 border-t border-ink-700 pt-6">
-              <ShareButtons
-                a={self.mision}
-                b={activeOther.mision}
-                selfName={firstName(self.name)}
-                otherName={firstName(activeOther.name)}
-              />
-              <EmailCapture mision={self.mision} />
-
-              {atLinkLimit ? (
-                <div className="space-y-3">
-                  <p className="text-center text-sm text-mist-500">
-                    Gratis incluye {FREE_LINK_LIMIT} conexiones ({linked.length}/{FREE_LINK_LIMIT}).
-                    Tu círculo completo abre con Premium.
-                  </p>
-                  <PriceGate compact />
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => startReplaceOther(viewIndex)}
-                  className="w-full text-sm text-mist-500 underline decoration-ink-600 underline-offset-4 transition hover:text-mist-300"
+            {step === "pair" && self && activeOther ? (
+              <div className="space-y-8">
+                <PairCard
+                  self={{ name: firstName(self.name), mision: self.mision }}
+                  other={{ name: personLabel(activeOther), mision: activeOther.mision }}
+                  relationshipLabel={RELATION_LABELS[activeOther.relationship]}
+                  sharePath={buildPairPath(self.mision, activeOther.mision, {
+                    a: firstName(self.name),
+                    b: personLabel(activeOther),
+                  })}
                 >
-                  Cambiar a {firstName(activeOther.name)}
-                </button>
-              )}
-            </div>
+                  <RelationMap
+                    self={{ name: firstName(self.name), mision: self.mision }}
+                    people={linked.map((person) => ({
+                      name: personLabel(person),
+                      mision: person.mision,
+                      relationship: person.relationship,
+                      birthKey: `${person.relationship}-${person.birthDate.year}-${person.birthDate.month}-${person.birthDate.day}-${person.name}`,
+                    }))}
+                    activeIndex={viewIndex}
+                    onSelect={(index) => {
+                      setViewIndex(index);
+                      document
+                        .getElementById("pair-reading")
+                        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                  />
+                </PairCard>
+                <EmailCapture mision={self.mision} />
+                {atLinkLimit ? (
+                  <div className="space-y-3">
+                    <p className="text-center text-sm text-mist-500">
+                      Gratis incluye {FREE_LINK_LIMIT} conexiones ({linked.length}/{FREE_LINK_LIMIT}
+                      ). Tu círculo completo abre con Premium.
+                    </p>
+                    <PriceGate compact />
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
-        ) : null}
-      </div>
 
-      {step === "mission" && self ? (
-        <StickyFlowAction
-          label="Añadir a alguien importante"
-          hint="Tu pareja, tu mamá, tu jefe — mira qué pasa entre ustedes"
-          onClick={startAddOther}
-        />
-      ) : null}
-
-      {step === "pair" && self && activeOther && !atLinkLimit ? (
-        <StickyFlowAction
-          label={`Añadir otra persona (${linked.length}/${FREE_LINK_LIMIT})`}
-          onClick={startAddOther}
-        />
-      ) : null}
+          {(step === "mission" || step === "pair") && self && !atLinkLimit ? (
+            <StickyFlowAction
+              tone="gold"
+              label="Añadir a alguien más"
+              hint={linked.length === 0 ? "Descubre cómo es tu relación." : undefined}
+              onClick={startAddOther}
+            />
+          ) : null}
+        </div>
+      </section>
     </div>
+  );
+}
+
+function ArrowLeft() {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className="size-4" fill="none">
+      <title>Volver</title>
+      <path
+        d="M12.5 4.5 7 10l5.5 5.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }

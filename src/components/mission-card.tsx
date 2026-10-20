@@ -20,7 +20,12 @@ export function MissionCard({
       <p className="text-sm text-mist-500">
         {displayName} · {formatDate(birthDate)}
       </p>
-      <AspectStory reading={getMission(mision)} layerLabel="Núcleo" name={name}>
+      <AspectStory
+        reading={getMission(mision)}
+        layerLabel="Camino de Vida"
+        layerSubtitle="Misión de Vida"
+        name={name}
+      >
         <CalculationPanel birthDate={birthDate} />
       </AspectStory>
     </div>
