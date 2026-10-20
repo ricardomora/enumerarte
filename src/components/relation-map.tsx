@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { RELATION_LABELS } from "@/components/link-person-form";
+import { EnergyPulse, NodeOrb } from "@/components/node-orb";
 import type { NumerologyValue, RelationshipType } from "@/lib/numerology";
 
 export interface RelationNode {
@@ -39,33 +41,45 @@ const STARS = [
   [140, 150, 0.5],
 ] as const;
 
+const SELF_TONE = {
+  ring: "border-[#f5a524]",
+  text: "text-[#f8d48a]",
+  glowClass: "shadow-[0_0_28px_rgba(245,165,36,0.55)]",
+  label: "text-[#f5a524]",
+  hex: "#f5a524",
+};
+
 const RELATION_TONE: Record<
   RelationshipType,
-  { ring: string; text: string; glow: string; label: string }
+  { ring: string; text: string; glowClass: string; label: string; hex: string }
 > = {
   pareja: {
     ring: "border-[#fb923c]",
     text: "text-[#ffedd5]",
-    glow: "shadow-[0_0_28px_rgba(251,146,60,0.55)]",
+    glowClass: "shadow-[0_0_28px_rgba(251,146,60,0.55)]",
     label: "text-[#fdba74]",
+    hex: "#fb923c",
   },
   familia: {
     ring: "border-[#c084fc]",
     text: "text-[#f3e8ff]",
-    glow: "shadow-[0_0_28px_rgba(168,85,247,0.55)]",
+    glowClass: "shadow-[0_0_28px_rgba(168,85,247,0.55)]",
     label: "text-[#d8b4fe]",
+    hex: "#c084fc",
   },
   amistad: {
     ring: "border-[#22d3ee]",
     text: "text-[#ecfeff]",
-    glow: "shadow-[0_0_28px_rgba(34,211,238,0.5)]",
+    glowClass: "shadow-[0_0_28px_rgba(34,211,238,0.5)]",
     label: "text-[#67e8f9]",
+    hex: "#22d3ee",
   },
   trabajo: {
     ring: "border-[#f5a524]",
     text: "text-[#f8d48a]",
-    glow: "shadow-[0_0_28px_rgba(245,165,36,0.55)]",
+    glowClass: "shadow-[0_0_28px_rgba(245,165,36,0.55)]",
     label: "text-[#f5a524]",
+    hex: "#f5a524",
   },
 };
 
@@ -85,6 +99,7 @@ export function RelationMap({
   activeIndex: number;
   onSelect: (index: number) => void;
 }) {
+  const [bursts, setBursts] = useState<Record<number, number>>({});
   const placed = people.map((person, index) => ({
     person,
     index,
@@ -101,29 +116,44 @@ export function RelationMap({
           preserveAspectRatio="xMidYMid meet"
         >
           <title>Estrellas</title>
-          {STARS.map(([x, y, r]) => (
-            <circle key={`${x}-${y}`} cx={x} cy={y} r={r} fill="rgba(244,242,255,0.75)" />
-          ))}
-          {placed.map((node) => (
-            <line
-              key={node.person.birthKey}
-              x1={SELF.x}
-              y1={SELF.y}
-              x2={node.x}
-              y2={node.y}
-              stroke="rgba(244,242,255,0.28)"
-              strokeWidth="1.25"
-            />
-          ))}
-          {placed.map((node) => (
+          {STARS.map(([x, y, r], index) => (
             <circle
-              key={`${node.person.birthKey}-mid`}
-              cx={(SELF.x + node.x) / 2}
-              cy={(SELF.y + node.y) / 2}
-              r="2.2"
+              key={`${x}-${y}`}
+              cx={x}
+              cy={y}
+              r={r}
               fill="rgba(244,242,255,0.85)"
+              className="animate-twinkle"
+              style={{ animationDelay: `${(index % 7) * 0.35}s` }}
             />
           ))}
+          {placed.map((node) => {
+            const tone = RELATION_TONE[node.person.relationship];
+            const linked = node.index === activeIndex;
+            return (
+              <line
+                key={node.person.birthKey}
+                x1={SELF.x}
+                y1={SELF.y}
+                x2={node.x}
+                y2={node.y}
+                stroke={linked ? tone.hex : "rgba(244,242,255,0.22)"}
+                strokeWidth={linked ? 1.6 : 1.1}
+              />
+            );
+          })}
+          {placed.map((node) =>
+            node.index === activeIndex ? (
+              <EnergyPulse
+                key={`${node.person.birthKey}-pulse`}
+                x1={SELF.x}
+                y1={SELF.y}
+                x2={node.x}
+                y2={node.y}
+                color={RELATION_TONE[node.person.relationship].hex}
+              />
+            ) : null,
+          )}
         </svg>
 
         <div className="relative" style={{ aspectRatio: `${VIEW.width} / ${VIEW.height}` }}>
@@ -133,12 +163,7 @@ export function RelationMap({
             value={self.mision}
             title={self.name}
             subtitle="Tú"
-            tone={{
-              ring: "border-[#f5a524]",
-              text: "text-[#f8d48a]",
-              glow: "shadow-[0_0_28px_rgba(245,165,36,0.55)]",
-              label: "text-[#f5a524]",
-            }}
+            tone={SELF_TONE}
             active
           />
           {placed.map((node) => (
@@ -151,7 +176,14 @@ export function RelationMap({
               subtitle={RELATION_LABELS[node.person.relationship]}
               tone={RELATION_TONE[node.person.relationship]}
               active={node.index === activeIndex}
-              onSelect={() => onSelect(node.index)}
+              burst={bursts[node.index] ?? 0}
+              onSelect={() => {
+                setBursts((current) => ({
+                  ...current,
+                  [node.index]: (current[node.index] ?? 0) + 1,
+                }));
+                onSelect(node.index);
+              }}
             />
           ))}
         </div>
@@ -175,6 +207,7 @@ function NodeCircle({
   subtitle,
   tone,
   active,
+  burst = 0,
   onSelect,
 }: {
   x: number;
@@ -182,19 +215,22 @@ function NodeCircle({
   value: NumerologyValue;
   title: string;
   subtitle: string;
-  tone: { ring: string; text: string; glow: string; label: string };
+  tone: { ring: string; text: string; glowClass: string; label: string; hex: string };
   active: boolean;
+  burst?: number;
   onSelect?: () => void;
 }) {
   const circle = (
     <>
-      <span
-        className={`grid size-14 place-items-center rounded-full border-2 bg-[#07060f]/80 font-mono text-xl tabular-nums sm:size-16 sm:text-2xl ${tone.ring} ${tone.text} ${
-          active ? tone.glow : "opacity-80"
-        }`}
-      >
-        {value}
-      </span>
+      <NodeOrb
+        value={value}
+        ring={tone.ring}
+        text={tone.text}
+        glowClass={tone.glowClass}
+        hex={tone.hex}
+        active={active}
+        burst={burst}
+      />
       <span className="absolute top-full left-1/2 mt-1.5 w-28 -translate-x-1/2 text-center leading-tight">
         <span className={`block text-[11px] font-medium sm:text-xs ${tone.label}`}>{title}</span>
         <span className="mt-0.5 block text-[10px] text-mist-500">{subtitle}</span>
@@ -221,7 +257,7 @@ function NodeCircle({
       aria-pressed={active}
       aria-label={`${title}, ${subtitle}, ${value}`}
       onClick={onSelect}
-      className="absolute -translate-x-1/2 -translate-y-1/2"
+      className="absolute -translate-x-1/2 -translate-y-1/2 transition duration-300 hover:scale-105"
       style={position}
     >
       {circle}

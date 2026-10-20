@@ -77,3 +77,58 @@
 @utility animate-rise {
   animation: rise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+@keyframes node-aura {
+  0%,
+  100% {
+    transform: scale(0.86);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.9;
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes spark {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.2);
+    opacity: 0;
+  }
+}
+
+@utility animate-node-aura {
+  animation: node-aura 2.8s ease-in-out infinite;
+}
+
+@utility animate-twinkle {
+  animation: twinkle 3.2s ease-in-out infinite;
+}
+
+@utility animate-spark {
+  animation: spark 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-node-aura,
+  .animate-twinkle,
+  .animate-spark,
+  .animate-rise,
+  .animate-story-slide {
+    animation: none;
+  }
+}

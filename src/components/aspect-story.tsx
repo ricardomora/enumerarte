@@ -1,6 +1,7 @@
 "use client";
 
 import { NumberGlyph } from "@/components/number-glyph";
+import type { LayerTone } from "@/components/profile-layers";
 import { SectionShare } from "@/components/section-share";
 import type { AspectReading } from "@/content/types";
 import type { NumerologyValue } from "@/lib/numerology";
@@ -11,6 +12,7 @@ interface AspectStoryProps {
   layerLabel: string;
   layerSubtitle?: string;
   name: string;
+  tone: LayerTone;
   /** Controles para cambiar de capa, justo después de la esencia. */
   afterHeader?: React.ReactNode;
   children?: React.ReactNode;
@@ -48,19 +50,20 @@ export function AspectStory({
   layerLabel,
   layerSubtitle,
   name,
+  tone,
   afterHeader,
   children,
 }: AspectStoryProps) {
   return (
-    <article className="animate-rise space-y-8">
+    <article key={tone.hex} className="animate-rise space-y-8">
       <header className="space-y-5 text-center">
         <div className="space-y-1">
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-accent-400">
+          <p className="font-mono text-xs uppercase tracking-[0.25em]" style={{ color: tone.hex }}>
             {layerLabel}
           </p>
           {layerSubtitle ? <p className="text-xs text-mist-500">{layerSubtitle}</p> : null}
         </div>
-        <NumberGlyph value={reading.value} />
+        <NumberGlyph value={reading.value} color={tone.hex} />
         <div className="mx-auto max-w-sm space-y-2">
           <h2 className="text-balance text-2xl font-medium text-mist-100 sm:text-3xl">
             {reading.title}
@@ -76,6 +79,7 @@ export function AspectStory({
         share={shareText(name, layerLabel, reading.value, "Cómo te mueves", reading.body)}
         card={numberCard(name, layerLabel, reading.value, "Cómo te mueves", reading.body)}
         section={`${layerLabel}:cuerpo`}
+        accent={tone.hex}
       >
         <p className="text-pretty text-base leading-relaxed text-mist-100">{reading.body}</p>
       </ReadingBlock>
@@ -98,7 +102,7 @@ export function AspectStory({
             reading.strengths.join(" "),
           )}
           section={`${layerLabel}:fortalezas`}
-          tone="accent"
+          accent={tone.hex}
         >
           <div className="space-y-2.5">
             {reading.strengths.map((item) => (
@@ -125,7 +129,7 @@ export function AspectStory({
             reading.frictions.join(" "),
           )}
           section={`${layerLabel}:fricciones`}
-          tone="glow"
+          accent={tone.hex}
         >
           <div className="space-y-2.5">
             {reading.frictions.map((item) => (
@@ -143,6 +147,7 @@ export function AspectStory({
           share={shareText(name, layerLabel, reading.value, "Bajo presión", reading.underPressure)}
           card={numberCard(name, layerLabel, reading.value, "Bajo presión", reading.underPressure)}
           section={`${layerLabel}:presion`}
+          accent={tone.hex}
         >
           <p className="text-pretty text-sm leading-relaxed text-mist-300">
             {reading.underPressure}
@@ -165,6 +170,7 @@ export function AspectStory({
             reading.inRelationships,
           )}
           section={`${layerLabel}:vinculos`}
+          accent={tone.hex}
         >
           <p className="text-pretty text-sm leading-relaxed text-mist-300">
             {reading.inRelationships}
@@ -175,7 +181,7 @@ export function AspectStory({
           share={shareText(name, layerLabel, reading.value, "Lo que otros ven", reading.blindSpot)}
           card={numberCard(name, layerLabel, reading.value, "Lo que otros ven", reading.blindSpot)}
           section={`${layerLabel}:punto-ciego`}
-          tone="glow"
+          accent={tone.hex}
         >
           <p className="text-pretty text-sm leading-relaxed text-mist-300">{reading.blindSpot}</p>
         </ReadingBlock>
@@ -198,7 +204,7 @@ export function AspectStory({
           reading.microPractice,
         )}
         section={`${layerLabel}:practica`}
-        tone="accent"
+        accent={tone.hex}
       >
         <p className="text-pretty text-base leading-relaxed text-mist-100">
           {reading.microPractice}
@@ -215,28 +221,29 @@ function ReadingBlock({
   share,
   card,
   section,
-  tone = "neutral",
+  accent,
   children,
 }: {
   label: string;
   share: string;
   card: ShareCardData;
   section: string;
-  tone?: "neutral" | "accent" | "glow";
+  accent: string;
   children: React.ReactNode;
 }) {
-  const frame =
-    tone === "accent"
-      ? "border-accent-500/25 border-l-4 border-l-accent-500 bg-accent-500/6"
-      : tone === "glow"
-        ? "border-glow-400/25 border-l-4 border-l-glow-400 bg-glow-400/6"
-        : "border-ink-700/80 bg-ink-900/50";
-  const labelClass = tone === "glow" ? "text-glow-300" : "text-accent-400";
-
   return (
-    <section className={`rounded-xl border p-4 backdrop-blur-sm ${frame}`}>
+    <section
+      className="rounded-xl border border-l-4 bg-ink-900/50 p-4 backdrop-blur-sm transition duration-300"
+      style={{
+        borderColor: `${accent}33`,
+        borderLeftColor: accent,
+        backgroundColor: `${accent}10`,
+      }}
+    >
       <div className="flex items-start justify-between gap-3">
-        <h3 className={`pt-1 text-xs uppercase tracking-wider ${labelClass}`}>{label}</h3>
+        <h3 className="pt-1 text-xs uppercase tracking-wider" style={{ color: accent }}>
+          {label}
+        </h3>
         <SectionShare section={section} text={share} card={card} />
       </div>
       <div className="mt-3">{children}</div>

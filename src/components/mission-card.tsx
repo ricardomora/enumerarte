@@ -1,5 +1,6 @@
 import { AspectStory } from "@/components/aspect-story";
 import { CalculationPanel } from "@/components/calculation-panel";
+import { LAYER_TONE } from "@/components/profile-layers";
 import { getMission } from "@/content";
 import { formatDate } from "@/lib/date-input";
 import type { CalendarDate, NumerologyValue } from "@/lib/numerology";
@@ -25,6 +26,7 @@ export function MissionCard({
         layerLabel="Camino de Vida"
         layerSubtitle="Misión de Vida"
         name={name}
+        tone={LAYER_TONE.nucleo}
       >
         <CalculationPanel birthDate={birthDate} />
       </AspectStory>

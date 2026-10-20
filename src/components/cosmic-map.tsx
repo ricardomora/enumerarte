@@ -1,6 +1,8 @@
 "use client";
 
-import { LAYER_COPY, type ProfileLayer } from "@/components/profile-layers";
+import { useState } from "react";
+import { EnergyPulse, NodeOrb } from "@/components/node-orb";
+import { LAYER_COPY, LAYER_TONE, type ProfileLayer } from "@/components/profile-layers";
 import type { NameNumbers, NumerologyValue } from "@/lib/numerology";
 
 interface CosmicMapProps {
@@ -19,33 +21,6 @@ interface NodeSpec {
 }
 
 const VIEW = { width: 320, height: 360 };
-
-const TONE: Record<ProfileLayer, { ring: string; text: string; glow: string; label: string }> = {
-  nucleo: {
-    ring: "border-[#f5a524]",
-    text: "text-[#f8d48a]",
-    glow: "shadow-[0_0_28px_rgba(245,165,36,0.55)]",
-    label: "text-[#f5a524]",
-  },
-  escudo: {
-    ring: "border-[#c084fc]",
-    text: "text-[#f3e8ff]",
-    glow: "shadow-[0_0_28px_rgba(168,85,247,0.55)]",
-    label: "text-[#d8b4fe]",
-  },
-  alma: {
-    ring: "border-[#fb923c]",
-    text: "text-[#ffedd5]",
-    glow: "shadow-[0_0_28px_rgba(251,146,60,0.5)]",
-    label: "text-[#fdba74]",
-  },
-  destino: {
-    ring: "border-[#22d3ee]",
-    text: "text-[#ecfeff]",
-    glow: "shadow-[0_0_28px_rgba(34,211,238,0.5)]",
-    label: "text-[#67e8f9]",
-  },
-};
 
 const STARS = [
   [18, 22, 1.1],
@@ -73,6 +48,7 @@ const STARS = [
 ] as const;
 
 export function CosmicMap({ mision, nameNumbers, active, onSelect }: CosmicMapProps) {
+  const [bursts, setBursts] = useState<Partial<Record<ProfileLayer, number>>>({});
   const nodes: NodeSpec[] = [
     { id: "escudo", x: 160, y: 48, value: nameNumbers?.escudo ?? null, locked: !nameNumbers },
     { id: "alma", x: 54, y: 168, value: nameNumbers?.alma ?? null, locked: !nameNumbers },
@@ -90,29 +66,46 @@ export function CosmicMap({ mision, nameNumbers, active, onSelect }: CosmicMapPr
           viewBox={`0 0 ${VIEW.width} ${VIEW.height}`}
           preserveAspectRatio="xMidYMid meet"
         >
-          {STARS.map(([x, y, r]) => (
-            <circle key={`${x}-${y}`} cx={x} cy={y} r={r} fill="rgba(244,242,255,0.75)" />
-          ))}
-          {nodes.slice(0, 3).map((node) => (
-            <line
-              key={node.id}
-              x1={anchor.x}
-              y1={anchor.y}
-              x2={node.x}
-              y2={node.y}
-              stroke="rgba(244,242,255,0.28)"
-              strokeWidth="1.25"
-            />
-          ))}
-          {nodes.slice(0, 3).map((node) => (
+          {STARS.map(([x, y, r], index) => (
             <circle
-              key={`${node.id}-mid`}
-              cx={(anchor.x + node.x) / 2}
-              cy={(anchor.y + node.y) / 2}
-              r="2.2"
+              key={`${x}-${y}`}
+              cx={x}
+              cy={y}
+              r={r}
               fill="rgba(244,242,255,0.85)"
+              className="animate-twinkle"
+              style={{ animationDelay: `${(index % 7) * 0.35}s` }}
             />
           ))}
+          {nodes.slice(0, 3).map((node) => {
+            const linked = active === node.id || active === anchor.id;
+            return (
+              <line
+                key={node.id}
+                x1={anchor.x}
+                y1={anchor.y}
+                x2={node.x}
+                y2={node.y}
+                stroke={linked ? LAYER_TONE[node.id].hex : "rgba(244,242,255,0.22)"}
+                strokeOpacity={linked ? 0.85 : 1}
+                strokeWidth={linked ? 1.6 : 1.1}
+              />
+            );
+          })}
+          {nodes
+            .slice(0, 3)
+            .map((node) =>
+              active === node.id || active === anchor.id ? (
+                <EnergyPulse
+                  key={`${node.id}-pulse`}
+                  x1={anchor.x}
+                  y1={anchor.y}
+                  x2={node.x}
+                  y2={node.y}
+                  color={LAYER_TONE[node.id].hex}
+                />
+              ) : null,
+            )}
         </svg>
 
         <div
@@ -122,7 +115,16 @@ export function CosmicMap({ mision, nameNumbers, active, onSelect }: CosmicMapPr
           style={{ aspectRatio: `${VIEW.width} / ${VIEW.height}` }}
         >
           {nodes.map((node) => (
-            <MapNode key={node.id} node={node} active={active === node.id} onSelect={onSelect} />
+            <MapNode
+              key={node.id}
+              node={node}
+              active={active === node.id}
+              burst={bursts[node.id] ?? 0}
+              onSelect={(layer) => {
+                setBursts((current) => ({ ...current, [layer]: (current[layer] ?? 0) + 1 }));
+                onSelect(layer);
+              }}
+            />
           ))}
         </div>
       </div>
@@ -134,14 +136,16 @@ export function CosmicMap({ mision, nameNumbers, active, onSelect }: CosmicMapPr
 function MapNode({
   node,
   active,
+  burst,
   onSelect,
 }: {
   node: NodeSpec;
   active: boolean;
+  burst: number;
   onSelect: (layer: ProfileLayer) => void;
 }) {
   const copy = LAYER_COPY[node.id];
-  const tone = TONE[node.id];
+  const tone = LAYER_TONE[node.id];
 
   return (
     <button
@@ -151,16 +155,20 @@ function MapNode({
       aria-label={`${copy.title}, ${node.locked ? "bloqueado" : node.value}. ${copy.subtitle}`}
       disabled={node.locked}
       onClick={() => onSelect(node.id)}
-      className="absolute -translate-x-1/2 -translate-y-1/2 disabled:cursor-not-allowed"
+      className={`absolute -translate-x-1/2 -translate-y-1/2 transition duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:hover:scale-100 ${
+        node.locked ? "opacity-40" : ""
+      }`}
       style={{ left: `${(node.x / VIEW.width) * 100}%`, top: `${(node.y / VIEW.height) * 100}%` }}
     >
-      <span
-        className={`grid size-14 place-items-center rounded-full border-2 bg-[#07060f]/80 font-mono text-xl tabular-nums sm:size-16 sm:text-2xl ${tone.ring} ${tone.text} ${
-          active ? tone.glow : "opacity-80"
-        } ${node.locked ? "opacity-40" : ""}`}
-      >
-        {node.locked ? "?" : node.value}
-      </span>
+      <NodeOrb
+        value={node.locked ? "?" : (node.value ?? "")}
+        ring={tone.ring}
+        text={tone.text}
+        glowClass={tone.glowClass}
+        hex={tone.hex}
+        active={active && !node.locked}
+        burst={node.locked ? 0 : burst}
+      />
       <span className="absolute top-full left-1/2 mt-1.5 w-28 -translate-x-1/2 text-center leading-tight">
         <span className={`block text-[11px] font-medium sm:text-xs ${tone.label}`}>
           {copy.title}

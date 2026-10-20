@@ -5,7 +5,7 @@ import { AspectStory } from "@/components/aspect-story";
 import { CalculationPanel } from "@/components/calculation-panel";
 import { CosmicMap } from "@/components/cosmic-map";
 import { NameCalculationPanel } from "@/components/name-calculation-panel";
-import { LAYER_COPY, layerTitle, type ProfileLayer } from "@/components/profile-layers";
+import { LAYER_COPY, LAYER_TONE, layerTitle, type ProfileLayer } from "@/components/profile-layers";
 import { getDestiny, getMission, getShield, getSoul } from "@/content";
 import type { CalendarDate, NameNumbers, NumerologyValue } from "@/lib/numerology";
 
@@ -68,6 +68,7 @@ export function ProfileMap({ name, birthDate, mision, nameNumbers }: ProfileMapP
             layerLabel={LAYER_COPY.nucleo.title}
             layerSubtitle={LAYER_COPY.nucleo.subtitle}
             name={name}
+            tone={LAYER_TONE.nucleo}
           >
             <CalculationPanel birthDate={birthDate} subject={LAYER_COPY.nucleo.title} />
             {map}
@@ -80,6 +81,7 @@ export function ProfileMap({ name, birthDate, mision, nameNumbers }: ProfileMapP
             layerLabel={LAYER_COPY.escudo.title}
             layerSubtitle={LAYER_COPY.escudo.subtitle}
             name={name}
+            tone={LAYER_TONE.escudo}
             afterHeader={
               <TensionNote nucleo={mision} other={nameNumbers.escudo} otherLabel="Personalidad" />
             }
@@ -95,6 +97,7 @@ export function ProfileMap({ name, birthDate, mision, nameNumbers }: ProfileMapP
             layerLabel={LAYER_COPY.alma.title}
             layerSubtitle={LAYER_COPY.alma.subtitle}
             name={name}
+            tone={LAYER_TONE.alma}
             afterHeader={<TensionNote nucleo={mision} other={nameNumbers.alma} otherLabel="Alma" />}
           >
             <NameCalculationPanel nameNumbers={nameNumbers} kind="alma" />
@@ -108,6 +111,7 @@ export function ProfileMap({ name, birthDate, mision, nameNumbers }: ProfileMapP
             layerLabel={LAYER_COPY.destino.title}
             layerSubtitle={LAYER_COPY.destino.subtitle}
             name={name}
+            tone={LAYER_TONE.destino}
           >
             <NameCalculationPanel nameNumbers={nameNumbers} kind="destino" />
             {map}
