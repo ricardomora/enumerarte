@@ -21,7 +21,6 @@ interface LinkPersonFormProps {
   submitLabel: string;
   initial?: LinkPersonInput;
   onSubmit: (person: LinkPersonInput) => void;
-  onCancel: () => void;
 }
 
 const MONTHS = [
@@ -42,9 +41,9 @@ const MONTHS = [
 const FIRST_YEAR = 1900;
 
 const fieldClass =
-  "w-full rounded-xl border border-ink-700 bg-ink-900 px-3 py-3 text-sm text-mist-100 outline-none transition focus:border-accent-500 focus:ring-2 focus:ring-accent-500/25";
+  "h-11 min-w-0 rounded-xl border border-ink-700 bg-ink-900 px-3 text-sm text-mist-100 outline-none transition focus:border-[#f5a524] focus:ring-2 focus:ring-[#f5a524]/25";
 
-export function LinkPersonForm({ submitLabel, initial, onSubmit, onCancel }: LinkPersonFormProps) {
+export function LinkPersonForm({ submitLabel, initial, onSubmit }: LinkPersonFormProps) {
   const dayId = useId();
   const monthId = useId();
   const yearId = useId();
@@ -94,104 +93,93 @@ export function LinkPersonForm({ submitLabel, initial, onSubmit, onCancel }: Lin
 
     setError(null);
     onSubmit({ name: name.trim(), birthDate, relationship });
+    setName("");
+    setRelationship("");
+    setDay("");
+    setMonth("");
+    setYear("");
   }
 
   return (
-    <form onSubmit={handleSubmit} className="animate-rise space-y-5" noValidate>
-      <div className="space-y-1.5">
-        <h2 className="text-balance text-xl font-medium text-mist-100">
-          Descubre cómo es tu relación
-        </h2>
-        <p className="text-sm leading-relaxed text-mist-500">
-          Con la fecha basta: el vínculo se lee desde el Camino de Vida de cada uno. El nombre solo
-          pone la etiqueta en tu mapa de personas.
-        </p>
+    <form onSubmit={handleSubmit} className="w-full min-w-0 space-y-3" noValidate>
+      <h2 className="relative text-balance text-center text-lg font-medium leading-snug text-[#f5a524] sm:text-xl">
+        <span
+          aria-hidden
+          className="absolute top-1/2 left-1/2 -z-10 h-10 w-[min(100%,22rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f5a524]/40 blur-2xl"
+        />
+        Descubre la conexión que tienes con otra persona
+      </h2>
+
+      <div className="flex min-w-0 items-center gap-2">
+        <p className="shrink-0 text-sm text-mist-300">Fecha de nacimiento</p>
+        <select
+          id={dayId}
+          aria-label="Día"
+          value={day}
+          onChange={(event) => setDay(event.target.value)}
+          className={`${fieldClass} flex-1`}
+        >
+          <option value="">Día</option>
+          {Array.from({ length: 31 }, (_, index) => index + 1).map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
+        <select
+          id={monthId}
+          aria-label="Mes"
+          value={month}
+          onChange={(event) => setMonth(event.target.value)}
+          className={`${fieldClass} flex-1`}
+        >
+          <option value="">Mes</option>
+          {MONTHS.map((label, index) => (
+            <option key={label} value={index + 1}>
+              {label}
+            </option>
+          ))}
+        </select>
+        <select
+          id={yearId}
+          aria-label="Año"
+          value={year}
+          onChange={(event) => setYear(event.target.value)}
+          className={`${fieldClass} flex-1`}
+        >
+          <option value="">Año</option>
+          {years.map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
       </div>
 
-      <fieldset className="space-y-1.5">
-        <legend className="text-xs uppercase tracking-wider text-mist-500">
-          Fecha de nacimiento
-        </legend>
-        <div className="grid grid-cols-3 gap-2">
-          <select
-            id={dayId}
-            aria-label="Día"
-            value={day}
-            onChange={(event) => setDay(event.target.value)}
-            className={fieldClass}
-          >
-            <option value="">Día</option>
-            {Array.from({ length: 31 }, (_, index) => index + 1).map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
-          <select
-            id={monthId}
-            aria-label="Mes"
-            value={month}
-            onChange={(event) => setMonth(event.target.value)}
-            className={fieldClass}
-          >
-            <option value="">Mes</option>
-            {MONTHS.map((label, index) => (
-              <option key={label} value={index + 1}>
-                {label}
-              </option>
-            ))}
-          </select>
-          <select
-            id={yearId}
-            aria-label="Año"
-            value={year}
-            onChange={(event) => setYear(event.target.value)}
-            className={fieldClass}
-          >
-            <option value="">Año</option>
-            {years.map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
-        </div>
-      </fieldset>
-
-      <div className="space-y-1.5">
-        <label
-          htmlFor={relationId}
-          className="block text-xs uppercase tracking-wider text-mist-500"
-        >
-          Parentesco
-        </label>
+      <div className="grid min-w-0 grid-cols-2 gap-2">
         <select
           id={relationId}
+          aria-label="Parentesco"
           value={relationship}
           onChange={(event) => setRelationship(event.target.value as RelationshipType | "")}
-          className={fieldClass}
+          className={`${fieldClass} w-full`}
         >
-          <option value="">Qué es para ti</option>
+          <option value="">Parentesco</option>
           {(Object.keys(RELATION_LABELS) as RelationshipType[]).map((type) => (
             <option key={type} value={type}>
               {RELATION_LABELS[type]}
             </option>
           ))}
         </select>
-      </div>
-
-      <div className="space-y-1.5">
-        <label htmlFor={nameId} className="block text-xs uppercase tracking-wider text-mist-500">
-          Cómo le dices
-        </label>
         <input
           id={nameId}
           type="text"
+          aria-label="Nombre"
           value={name}
           onChange={(inputEvent) => setName(inputEvent.target.value)}
-          placeholder="Opcional. Ana, mamá, jefe…"
+          placeholder="Agrégale un nombre"
           autoComplete="off"
-          className="w-full rounded-xl border border-ink-700 bg-ink-900 px-4 py-3 text-mist-100 outline-none transition placeholder:text-ink-600 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/25"
+          className={`${fieldClass} w-full placeholder:text-ink-600`}
         />
       </div>
 
@@ -201,21 +189,12 @@ export function LinkPersonForm({ submitLabel, initial, onSubmit, onCancel }: Lin
         </p>
       ) : null}
 
-      <div className="flex flex-col gap-2">
-        <button
-          type="submit"
-          className="w-full rounded-xl bg-accent-500 px-5 py-3.5 font-medium text-white transition hover:bg-accent-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-400 active:scale-[0.99]"
-        >
-          {submitLabel}
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="w-full py-2 text-sm text-mist-500 transition hover:text-mist-300"
-        >
-          Cancelar
-        </button>
-      </div>
+      <button
+        type="submit"
+        className="w-full rounded-xl bg-[#f5a524] px-5 py-3.5 text-sm font-medium text-[#1a1206] shadow-[0_8px_32px_rgba(245,165,36,0.45)] transition hover:bg-[#f8d48a] active:scale-[0.99]"
+      >
+        {submitLabel}
+      </button>
     </form>
   );
 }

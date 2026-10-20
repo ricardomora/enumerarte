@@ -1,0 +1,14 @@
+---
+description: Al ajustar ancho, padding o alineación, conservar la composición que ya está en pantalla
+alwaysApply: true
+---
+
+# Composición de la interfaz
+
+Un pedido de ancho, padding, alineación o desborde se resuelve dentro de la composición actual.
+
+- Una fila sigue en una fila. Una columna sigue en una columna. Un botón al lado de un campo no pasa a la línea de abajo.
+- El ajuste es el contenedor: el mismo padding, `min-w-0` para que el campo pueda encogerse, y los bordes izquierdo y derecho alineados con el control de al lado.
+- Antes de darlo por terminado, compara con la pantalla anterior. Si la composición cambió y nadie lo pidió, devuélvela.
+
+Ejemplo: el correo y Suscribirte van en la misma línea y esa línea mide lo mismo que el botón de arriba. El botón no se baja a otra línea para “que quepa”.

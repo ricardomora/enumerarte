@@ -1,15 +1,15 @@
 /**
- * Captura de correo de la Fase 0.
+ * Captura de correo.
  *
- * Guardar la lista en el proveedor de analítica es suficiente mientras el
- * objetivo sea medir conversión y poder exportar los contactos. Cuando la Fase 1
- * traiga Convex, este archivo pasa a escribir en la tabla de leads y nada más
- * cambia en el cliente.
+ * Una suscripción (promociones y ofertas) se guarda en la tabla `subscriptions`
+ * de Convex. El resto de correos, los de la lectura del círculo, siguen en el
+ * registro y en el proveedor de analítica si hay clave.
  *
- * Solo se almacena el correo y el número de misión, nunca la fecha de nacimiento
- * completa: para medir conversión no hace falta y guardarla sería recoger un dato
- * sensible sin propósito.
+ * Solo se almacena el correo y, en el lead del círculo, el número de misión.
+ * Nunca la fecha de nacimiento completa.
  */
+
+import { saveSubscription } from "@/lib/subscriptions";
 
 const POSTHOG_HOST = process.env.POSTHOG_HOST ?? "https://us.i.posthog.com";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -33,6 +33,15 @@ export async function POST(request: Request) {
       : email;
 
   const intent = payload.intent === "subscribe" ? "subscribe" : "lead";
+
+  if (intent === "subscribe") {
+    try {
+      await saveSubscription(email);
+    } catch (error) {
+      console.error("No se pudo guardar la suscripción", error);
+      return Response.json({ ok: false, error: "subscribe_failed" }, { status: 502 });
+    }
+  }
 
   console.log(
     JSON.stringify({

@@ -6,7 +6,7 @@ import { Starfield } from "@/components/starfield";
 export const metadata: Metadata = {
   title: "Escríbenos · Enumerarte",
   description:
-    "Escríbenos por correo o WhatsApp, deja un comentario o suscríbete para enterarte de las novedades y de cuando la app esté lista.",
+    "Escríbenos por correo o WhatsApp, deja un comentario o suscríbete para promociones y ofertas.",
 };
 
 export default function ContactPage() {

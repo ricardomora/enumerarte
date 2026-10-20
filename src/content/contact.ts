@@ -30,11 +30,9 @@ export const contactCopy = {
   whatsappBody: "Si prefieres un mensaje directo, estamos en este número.",
   whatsappAction: "Abrir WhatsApp",
   subscribeTitle: "Suscríbete",
-  subscribeBody: "Novedades, funciones nuevas y un aviso cuando la app esté lista. Solo tu correo.",
   subscribePlaceholder: "tu@correo.com",
-  subscribeSubmit: "Suscribirme",
+  subscribeSubmit: "Suscribirte",
   subscribeSending: "Guardando",
-  subscribeDone: "Listo. Te escribimos cuando haya novedades o cuando la app esté lista.",
+  subscribeDone: "Listo. Te escribimos cuando haya promociones y ofertas.",
   subscribeError: "No se pudo guardar. Revisa el correo e intenta de nuevo.",
-  subscribePrivacy: "Guardamos tu correo para avisarte. Puedes pedir que lo borremos.",
 } as const;

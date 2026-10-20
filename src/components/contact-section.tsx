@@ -3,7 +3,6 @@
 import { useId, useState } from "react";
 import { CONTACT_EMAIL, contactCopy, WHATSAPP_DISPLAY } from "@/content/contact";
 import { mailTo, whatsAppLink } from "@/lib/contact";
-import { getVisitorId, track } from "@/lib/track";
 
 export function ContactSection() {
   const messageId = useId();
@@ -109,82 +108,6 @@ export function ContactSection() {
           {contactCopy.whatsappAction}
         </a>
       </div>
-
-      <SubscribeForm />
     </section>
-  );
-}
-
-function SubscribeForm() {
-  const inputId = useId();
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
-
-  async function handleSubmit(formEvent: React.FormEvent<HTMLFormElement>) {
-    formEvent.preventDefault();
-    if (status === "sending") return;
-    setStatus("sending");
-
-    try {
-      const response = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, intent: "subscribe", visitorId: getVisitorId() }),
-      });
-      if (!response.ok) throw new Error(String(response.status));
-      track("subscribed");
-      setStatus("done");
-    } catch {
-      setStatus("error");
-    }
-  }
-
-  if (status === "done") {
-    return (
-      <div className="rounded-2xl border border-accent-500/30 bg-accent-500/8 p-5 text-center">
-        <p className="text-sm leading-relaxed text-mist-100">{contactCopy.subscribeDone}</p>
-      </div>
-    );
-  }
-
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-3 rounded-2xl border border-ink-700 bg-ink-900/40 p-5"
-      noValidate
-    >
-      <div className="space-y-1 text-center">
-        <h3 className="text-sm font-medium text-mist-100">{contactCopy.subscribeTitle}</h3>
-        <p className="text-sm leading-relaxed text-mist-500">{contactCopy.subscribeBody}</p>
-      </div>
-      <label htmlFor={inputId} className="sr-only">
-        {contactCopy.subscribeTitle}
-      </label>
-      <input
-        id={inputId}
-        type="email"
-        required
-        value={email}
-        onChange={(inputEvent) => setEmail(inputEvent.target.value)}
-        placeholder={contactCopy.subscribePlaceholder}
-        autoComplete="email"
-        className="w-full rounded-xl border border-ink-700 bg-ink-900 px-4 py-3 text-sm text-mist-100 outline-none transition placeholder:text-ink-600 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/25"
-      />
-      {status === "error" ? (
-        <p role="alert" className="text-sm text-glow-300">
-          {contactCopy.subscribeError}
-        </p>
-      ) : null}
-      <button
-        type="submit"
-        disabled={status === "sending"}
-        className="w-full rounded-xl bg-[#f5a524] px-5 py-3 text-sm font-medium text-[#1a1206] transition hover:bg-[#f8d48a] disabled:opacity-60"
-      >
-        {status === "sending" ? contactCopy.subscribeSending : contactCopy.subscribeSubmit}
-      </button>
-      <p className="text-center text-xs leading-relaxed text-mist-500">
-        {contactCopy.subscribePrivacy}
-      </p>
-    </form>
   );
 }

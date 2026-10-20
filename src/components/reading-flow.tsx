@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { EmailCapture } from "@/components/email-capture";
 import {
   LinkPersonForm,
   type LinkPersonInput,
@@ -12,7 +11,7 @@ import { PersonForm, type PersonInput } from "@/components/person-form";
 import { PriceGate } from "@/components/price-gate";
 import { ProfileMap } from "@/components/profile-map";
 import { RelationMap } from "@/components/relation-map";
-import { StickyFlowAction } from "@/components/sticky-flow-action";
+import { SubscribeForm } from "@/components/subscribe-form";
 import { formatDate } from "@/lib/date-input";
 import { FREE_LINK_LIMIT } from "@/lib/limits";
 import {
@@ -24,7 +23,7 @@ import {
 import { buildPairPath } from "@/lib/share";
 import { track } from "@/lib/track";
 
-type Step = "self" | "mission" | "other" | "pair";
+type Step = "self" | "mission" | "pair";
 
 interface Person extends PersonInput {
   mision: NumerologyValue;
@@ -59,7 +58,6 @@ export function ReadingFlow() {
   const [self, setSelf] = useState<Person | null>(null);
   const [linked, setLinked] = useState<LinkedPerson[]>([]);
   const [viewIndex, setViewIndex] = useState(0);
-  const [formReturn, setFormReturn] = useState<"mission" | "pair">("mission");
 
   const atLinkLimit = linked.length >= FREE_LINK_LIMIT;
   const activeOther = linked[viewIndex] ?? null;
@@ -101,24 +99,8 @@ export function ReadingFlow() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function startAddOther() {
-    if (atLinkLimit) {
-      track("price_clicked", { tier: "premium", reason: "link_limit" });
-      return;
-    }
-    setFormReturn(step === "pair" ? "pair" : "mission");
-    setStep("other");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
   function goBack() {
-    if (step === "other") {
-      setStep(formReturn);
-    } else if (step === "pair") {
-      setStep("mission");
-    } else {
-      setStep("self");
-    }
+    setStep(step === "pair" ? "mission" : "self");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -131,11 +113,7 @@ export function ReadingFlow() {
           className="mb-4 inline-flex w-fit items-center gap-1.5 text-sm text-mist-300 transition hover:text-mist-100"
         >
           <ArrowLeft />
-          {step === "mission"
-            ? "Volver al inicio"
-            : step === "pair"
-              ? "Volver a tu mapa"
-              : "Volver"}
+          {step === "pair" ? "Volver a tu mapa" : "Volver al inicio"}
         </button>
       ) : null}
 
@@ -186,22 +164,6 @@ export function ReadingFlow() {
               />
             ) : null}
 
-            {step === "other" && self ? (
-              <div className="space-y-4">
-                {linked.length === FREE_LINK_LIMIT - 1 ? (
-                  <p className="text-sm text-mist-500">
-                    Tu {FREE_LINK_LIMIT}ª conexión gratis. Para todo tu círculo, Premium viene en
-                    camino.
-                  </p>
-                ) : null}
-                <LinkPersonForm
-                  submitLabel="Ver la conexión"
-                  onSubmit={handleLink}
-                  onCancel={goBack}
-                />
-              </div>
-            ) : null}
-
             {step === "pair" && self && activeOther ? (
               <div className="space-y-8">
                 <PairCard
@@ -230,7 +192,6 @@ export function ReadingFlow() {
                     }}
                   />
                 </PairCard>
-                <EmailCapture mision={self.mision} />
                 {atLinkLimit ? (
                   <div className="space-y-3">
                     <p className="text-center text-sm text-mist-500">
@@ -244,13 +205,13 @@ export function ReadingFlow() {
             ) : null}
           </div>
 
-          {(step === "mission" || step === "pair") && self && !atLinkLimit ? (
-            <StickyFlowAction
-              tone="gold"
-              label="Añadir a alguien más"
-              hint={linked.length === 0 ? "Descubre cómo es tu relación." : undefined}
-              onClick={startAddOther}
-            />
+          {(step === "mission" || step === "pair") && self ? (
+            <div className="sticky bottom-0 min-w-0 border-t border-ink-700/80 bg-ink-950/90 px-5 py-4 backdrop-blur-md sm:px-7">
+              {!atLinkLimit ? (
+                <LinkPersonForm submitLabel="Ver conexión" onSubmit={handleLink} />
+              ) : null}
+              <SubscribeForm />
+            </div>
           ) : null}
         </div>
       </section>
