@@ -5,23 +5,33 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /** Guarda un correo para promociones y ofertas. Si ya existe, no lo duplica. */
 export const subscribe = mutation({
-  args: { email: v.string() },
+  args: { email: v.string(), policyVersion: v.string() },
   returns: v.null(),
   handler: async (ctx, args) => {
     const email = args.email.trim().toLowerCase();
     if (!EMAIL_PATTERN.test(email) || email.length > 254) {
       throw new Error("Correo inválido");
     }
+    const policyVersion = args.policyVersion.trim();
+    if (policyVersion.length === 0 || policyVersion.length > 32) {
+      throw new Error("Versión de política inválida");
+    }
 
     const existing = await ctx.db
       .query("subscriptions")
       .withIndex("by_email", (q) => q.eq("email", email))
       .unique();
-    if (existing) return null;
+    if (existing) {
+      if (!existing.policyVersion) {
+        await ctx.db.patch(existing._id, { policyVersion });
+      }
+      return null;
+    }
 
     await ctx.db.insert("subscriptions", {
       email,
       createdAt: Date.now(),
+      policyVersion,
     });
     return null;
   },

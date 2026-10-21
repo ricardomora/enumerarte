@@ -1,24 +1,38 @@
 "use client";
 
+import Link from "next/link";
 import { useId, useState } from "react";
 import { contactCopy } from "@/content/contact";
+import { legalIdentity } from "@/content/legal";
 import { getVisitorId, trackOnce } from "@/lib/track";
 
 export function SubscribeForm() {
   const inputId = useId();
+  const consentId = useId();
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
+  const [accepted, setAccepted] = useState(false);
+  const [status, setStatus] = useState<"idle" | "sending" | "done" | "error" | "consent">("idle");
 
   async function handleSubmit(formEvent: React.FormEvent<HTMLFormElement>) {
     formEvent.preventDefault();
     if (status === "sending") return;
+    if (!accepted) {
+      setStatus("consent");
+      return;
+    }
     setStatus("sending");
 
     try {
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, intent: "subscribe", visitorId: getVisitorId() }),
+        body: JSON.stringify({
+          email,
+          intent: "subscribe",
+          visitorId: getVisitorId(),
+          consent: true,
+          policyVersion: legalIdentity.policyVersion,
+        }),
       });
       if (!response.ok) throw new Error(String(response.status));
       trackOnce("subscribed");
@@ -62,6 +76,36 @@ export function SubscribeForm() {
           {status === "sending" ? contactCopy.subscribeSending : contactCopy.subscribeSubmit}
         </button>
       </div>
+      <label
+        htmlFor={consentId}
+        className="flex items-start gap-2 text-xs leading-relaxed text-mist-500"
+      >
+        <input
+          id={consentId}
+          type="checkbox"
+          checked={accepted}
+          onChange={(inputEvent) => {
+            setAccepted(inputEvent.target.checked);
+            if (inputEvent.target.checked) setStatus("idle");
+          }}
+          className="mt-0.5 size-3.5 shrink-0 accent-[#f5a524]"
+        />
+        <span>
+          {contactCopy.subscribeConsentLead}{" "}
+          <Link
+            href="/privacidad"
+            className="text-mist-300 underline decoration-ink-600 underline-offset-2"
+          >
+            {contactCopy.subscribeConsentLink}
+          </Link>
+          .
+        </span>
+      </label>
+      {status === "consent" ? (
+        <p role="alert" className="text-sm text-glow-300">
+          {contactCopy.subscribeConsentMissing}
+        </p>
+      ) : null}
       {status === "error" ? (
         <p role="alert" className="text-sm text-glow-300">
           {contactCopy.subscribeError}

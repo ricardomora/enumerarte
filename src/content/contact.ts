@@ -8,14 +8,14 @@ export const WHATSAPP_DISPLAY = "+57 321 332 2022";
 
 export const contactCopy = {
   title: "Escríbenos",
-  body: "Si quieres más información, enterarte de las novedades o pedir una consulta personalizada, escríbenos a este correo.",
+  body: "Si quieres más información o enterarte de las novedades, escríbenos a este correo. Es una conversación sobre el sitio, no una predicción.",
   reasons: [
     { id: "info", label: "Más información", subject: "Quiero más información" },
     { id: "updates", label: "Novedades", subject: "Quiero enterarme de las novedades" },
     {
-      id: "consult",
-      label: "Consulta personalizada",
-      subject: "Quiero una consulta personalizada",
+      id: "talk",
+      label: "Conversar sobre el sitio",
+      subject: "Quiero conversar sobre el sitio",
     },
   ],
   feedbackTitle: "Comentarios",
@@ -33,6 +33,10 @@ export const contactCopy = {
   subscribePlaceholder: "tu@correo.com",
   subscribeSubmit: "Suscribirte",
   subscribeSending: "Guardando",
+  subscribeConsentLead:
+    "Acepto que Enumerarte guarde este correo para avisarme de promociones y ofertas, según la",
+  subscribeConsentLink: "política de privacidad",
+  subscribeConsentMissing: "Marca la casilla para poder guardar el correo.",
   subscribeDone: "Listo. Te escribimos cuando haya promociones y ofertas.",
   subscribeError: "No se pudo guardar. Revisa el correo e intenta de nuevo.",
 } as const;

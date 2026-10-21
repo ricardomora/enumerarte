@@ -45,7 +45,8 @@ export const LAYER_TONE: Record<ProfileLayer, LayerTone> = {
   },
 };
 
-export const NUMBERS_MAP_TITLE = "Estos son tus otros números, dale click al número para conocer más";
+export const NUMBERS_MAP_TITLE =
+  "Estos son tus otros números, dale click al número para conocer más";
 
 export const LAYER_COPY: Record<ProfileLayer, { title: string; subtitle: string }> = {
   nucleo: { title: "Camino de Vida", subtitle: "Misión de Vida" },

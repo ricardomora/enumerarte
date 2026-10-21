@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   LinkPersonForm,
@@ -12,6 +13,8 @@ import { PriceGate } from "@/components/price-gate";
 import { ProfileMap } from "@/components/profile-map";
 import { RelationMap } from "@/components/relation-map";
 import { SubscribeForm } from "@/components/subscribe-form";
+import { exampleCopy } from "@/content/legal";
+import { premiumCopy } from "@/content/premium";
 import { formatDate } from "@/lib/date-input";
 import { FREE_LINK_LIMIT } from "@/lib/limits";
 import {
@@ -128,10 +131,20 @@ export function ReadingFlow() {
           Tu mapa. Tus vínculos. Tus señales.
         </h1>
         {step === "self" || !self ? (
-          <p className="mx-auto max-w-md text-pretty text-sm leading-relaxed text-mist-300 sm:text-base">
-            Descubre lo que dicen tus números sobre ti y sobre quienes te importan. Sin hora de
-            nacimiento. Sin registro y sin login.
-          </p>
+          <>
+            <p className="mx-auto max-w-md text-pretty text-sm leading-relaxed text-mist-300 sm:text-base">
+              Descubre lo que dicen tus números sobre ti y sobre quienes te importan. Sin hora de
+              nacimiento. Sin registro y sin login.
+            </p>
+            <p>
+              <Link
+                href="/ejemplo"
+                className="text-sm text-mist-100 underline decoration-ink-600 underline-offset-4"
+              >
+                {exampleCopy.homeLink}
+              </Link>
+            </p>
+          </>
         ) : (
           <div className="space-y-1">
             <p className="text-base text-mist-100">{self.name}</p>
@@ -198,8 +211,7 @@ export function ReadingFlow() {
                 {atLinkLimit ? (
                   <div className="space-y-3">
                     <p className="text-center text-sm text-mist-500">
-                      Gratis incluye {FREE_LINK_LIMIT} conexiones ({linked.length}/{FREE_LINK_LIMIT}
-                      ). Tu círculo completo abre con Premium.
+                      {premiumCopy.limitNote(linked.length, FREE_LINK_LIMIT)}
                     </p>
                     <PriceGate compact />
                   </div>

@@ -31,7 +31,7 @@ Variables de entorno, todas opcionales en desarrollo:
 | -------------- | -------------------------------------------------------------------------------- |
 | `POSTHOG_KEY`  | Sin ella los eventos solo se escriben en el log del servidor                      |
 | `POSTHOG_HOST` | Por defecto `https://us.i.posthog.com`                                            |
-| `SITE_URL`     | Dominio propio, p. ej. `https://enumerarte.com`. Resuelve las imágenes de vista previa |
+| `SITE_URL`     | Dominio propio, `https://www.enumerarte.com`. Resuelve las imágenes de vista previa |
 
 `SITE_URL` importa en producción: sin ella las URLs de Open Graph se resuelven
 contra `localhost`, y WhatsApp no puede descargar la vista previa del enlace
@@ -116,5 +116,6 @@ tiendas de aplicaciones.
 
 - Modelo de grafo con aristas tipadas y perfiles fantasma reclamables
 - Los 78 pares en inglés
-- Persistencia en Convex, hoy los leads viven en el proveedor de analítica
+- Desplegar en Convex el campo `policyVersion` de las suscripciones. El código ya lo envía.
 - Imagen OG generada por lectura, para el bucle de compartir
+- `ads.txt` y el script de AdSense, cuando la cuenta entregue el publisher id. No inventar ese id.

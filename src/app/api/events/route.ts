@@ -1,13 +1,11 @@
 /**
  * Recolector de eventos.
  *
- * Único punto donde se decide a dónde va la analítica. Hoy reenvía a PostHog si
- * hay clave configurada y siempre deja un registro estructurado, que en Vercel
- * queda consultable en los logs. Cambiar de proveedor es cambiar este archivo.
- *
- * Deliberadamente no se guarda nada identificable: el `visitorId` es un UUID
- * generado en el cliente y no se registran nombres ni fechas de nacimiento.
+ * Reenvía a PostHog si hay clave. El correo, el nombre y la fecha no viajan:
+ * si el cliente los manda, se descartan antes del log y del reenvío.
  */
+
+import { allowRequest, clientAddress, EVENT_LIMIT, redactProperties } from "@/lib/request-guard";
 
 const POSTHOG_HOST = process.env.POSTHOG_HOST ?? "https://us.i.posthog.com";
 
@@ -18,6 +16,10 @@ interface EventPayload {
 }
 
 export async function POST(request: Request) {
+  if (!allowRequest(`events:${clientAddress(request)}`, EVENT_LIMIT.limit, EVENT_LIMIT.windowMs)) {
+    return new Response(null, { status: 429 });
+  }
+
   let payload: EventPayload;
   try {
     payload = await request.json();
@@ -31,18 +33,19 @@ export async function POST(request: Request) {
   }
 
   const distinctId =
-    typeof visitorId === "string" && visitorId.length > 0 ? visitorId : "anonymous";
-  const properties =
+    typeof visitorId === "string" && visitorId.length > 0 && visitorId.length <= 80
+      ? visitorId
+      : "anonymous";
+  const properties = redactProperties(
     payload.properties !== null && typeof payload.properties === "object"
       ? (payload.properties as Record<string, unknown>)
-      : {};
+      : {},
+  );
 
   console.log(
     JSON.stringify({
       type: "analytics",
       event,
-      distinctId,
-      properties,
       at: new Date().toISOString(),
     }),
   );
@@ -63,11 +66,10 @@ export async function POST(request: Request) {
       if (!response.ok) {
         console.error("PostHog rechazó el evento", response.status);
       }
-    } catch (error) {
-      console.error("No se pudo reenviar el evento a PostHog", error);
+    } catch {
+      console.error("No se pudo reenviar el evento a PostHog");
     }
   }
 
-  // 204 y sin cuerpo: sendBeacon no lee la respuesta.
   return new Response(null, { status: 204 });
 }

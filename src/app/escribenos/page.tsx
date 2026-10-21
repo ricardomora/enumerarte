@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContactSection } from "@/components/contact-section";
+import { SiteFooter } from "@/components/site-footer";
 import { Starfield } from "@/components/starfield";
+import { chromeCopy, legalIdentity } from "@/content/legal";
 
 export const metadata: Metadata = {
   title: "Escríbenos",
@@ -18,12 +20,13 @@ export default function ContactPage() {
         className="mb-6 inline-flex w-fit items-center gap-1.5 text-sm text-mist-300 transition hover:text-mist-100"
       >
         <ArrowLeft />
-        Volver al inicio
+        {chromeCopy.backHome}
       </Link>
       <p className="text-center font-mono text-sm uppercase tracking-[0.3em] text-accent-400">
         Enumerarte
       </p>
       <ContactSection />
+      <SiteFooter className="mt-12" note={legalIdentity.brand} />
     </main>
   );
 }
