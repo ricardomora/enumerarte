@@ -4,7 +4,7 @@ import { ContactSection } from "@/components/contact-section";
 import { Starfield } from "@/components/starfield";
 
 export const metadata: Metadata = {
-  title: "Escríbenos · Enumerarte",
+  title: "Escríbenos",
   description:
     "Escríbenos por correo o WhatsApp, deja un comentario o suscríbete para promociones y ofertas.",
 };

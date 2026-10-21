@@ -15,7 +15,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: siteUrl(),
-  title: "Enumerarte · Tu mapa y tus vínculos",
+  applicationName: "Enumerarte",
+  title: {
+    default: "Enumerarte · Tu mapa y tus vínculos",
+    template: "%s · Enumerarte",
+  },
   description:
     "Descubre tu Camino de Vida, tu Personalidad, tu Alma y tu Expresión. Entiende la conexión con tu pareja, familia y amigos.",
   openGraph: {
@@ -23,6 +27,17 @@ export const metadata: Metadata = {
     description: "Tu mapa. Tus vínculos. Tus señales.",
     locale: "es_ES",
     type: "website",
+    siteName: "Enumerarte",
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Enumerarte",
+    description: "Tu mapa. Tus vínculos. Tus señales.",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 

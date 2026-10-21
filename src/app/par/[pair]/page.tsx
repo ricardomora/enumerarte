@@ -33,14 +33,14 @@ function readNames(searchParams: Record<string, string | string[] | undefined>) 
 export async function generateMetadata(props: PageProps<"/par/[pair]">): Promise<Metadata> {
   const { pair } = await props.params;
   const parsed = parsePairKey(pair);
-  if (!parsed) return { title: "Enumerarte" };
+  if (!parsed) return { title: { absolute: "Enumerarte" } };
 
   const content = getPair(parsed.a, parsed.b);
   const names = readNames(await props.searchParams);
   const who = names.a && names.b ? `${names.a} y ${names.b}` : `un ${parsed.a} y un ${parsed.b}`;
 
   return {
-    title: `${content.headline} · Enumerarte`,
+    title: content.headline,
     description: `Lo que pasa entre ${who}. ${content.headline}.`,
     openGraph: {
       title: content.headline,
