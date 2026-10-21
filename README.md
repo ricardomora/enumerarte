@@ -90,8 +90,10 @@ misiones y le faltan los pares, y la búsqueda cae a español mientras no exista
 ### Por qué 78 pares
 
 Doce valores posibles (1-9 más 11, 22 y 33) dan 12 × 13 / 2 = 78 pares no
-dirigidos. Los pares tipados por relación (pareja, familia, trabajo, amistad)
-multiplican por cuatro y quedan para la Fase 1.
+dirigidos. La página de la conexión añade una nota corta según el parentesco
+(amor, familia, amistad o trabajo). No es un puntaje de compatibilidad: es cómo
+se vive esa misma dinámica en ese vínculo. Las lecturas completas tipadas por
+relación siguen para la Fase 1.
 
 ## Posición sobre la validez
 

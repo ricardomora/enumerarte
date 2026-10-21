@@ -10,7 +10,7 @@
  * demostrada, así que el valor entregado tiene que estar en el consejo.
  */
 
-import type { NumerologyValue, PairKey } from "@/lib/numerology";
+import type { NumerologyValue, PairKey, RelationshipType } from "@/lib/numerology";
 
 export const LOCALES = ["es", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
@@ -56,6 +56,19 @@ export interface PairContent {
    * buen consejo aunque se ignore por completo la numerología.
    */
   practice: string;
+}
+
+/** La misma dinámica, leída en el parentesco que la persona eligió. */
+export type PairBonds = Record<RelationshipType, string>;
+
+export interface PairReading extends PairContent {
+  bonds: PairBonds;
+}
+
+export interface BondFrame {
+  title: string;
+  /** Qué mira esta nota. No es un puntaje. */
+  lead: string;
 }
 
 export interface LocaleContent {

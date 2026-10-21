@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { ALL_VALUES, allPairKeys, computeMision, pairKey } from "../lib/numerology/index.js";
+import {
+  ALL_VALUES,
+  allPairKeys,
+  computeMision,
+  pairKey,
+  RELATIONSHIP_TYPES,
+} from "../lib/numerology/index.js";
 import { getMission, getPair } from "./index.js";
 import { LOCALES } from "./types.js";
 
@@ -48,6 +54,23 @@ describe("registro de contenido", () => {
       const previous = seen.get(practice);
       assert.equal(previous, undefined, `práctica repetida en ${key} y ${previous}`);
       seen.set(practice, key);
+    }
+  });
+
+  test("ninguna nota de vínculo se repite", () => {
+    const seen = new Map<string, string>();
+    for (const key of allPairKeys()) {
+      const [a, b] = key.split("x").map(Number);
+      const { bonds } = getPair(a as never, b as never);
+      for (const relationship of RELATIONSHIP_TYPES) {
+        const text = bonds[relationship];
+        assert.ok(text.length > 40, `${key} ${relationship} es demasiado corta`);
+        assert.equal(text.includes("%"), false, `${key} ${relationship} parece un puntaje`);
+        const id = `${key}:${relationship}`;
+        const previous = seen.get(text);
+        assert.equal(previous, undefined, `nota de vínculo repetida en ${id} y ${previous}`);
+        seen.set(text, id);
+      }
     }
   });
 

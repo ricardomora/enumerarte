@@ -170,6 +170,7 @@ export function ReadingFlow() {
                 <PairCard
                   self={{ name: firstName(self.name), mision: self.mision }}
                   other={{ name: personLabel(activeOther), mision: activeOther.mision }}
+                  relationship={activeOther.relationship}
                   relationshipLabel={RELATION_LABELS[activeOther.relationship]}
                   sharePath={buildPairPath(self.mision, activeOther.mision, {
                     a: firstName(self.name),

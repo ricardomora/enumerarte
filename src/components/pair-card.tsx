@@ -1,23 +1,27 @@
 import { SectionShare } from "@/components/section-share";
-import { getPair } from "@/content";
-import type { NumerologyValue } from "@/lib/numerology";
+import { BOND_FRAME, getPair } from "@/content";
+import type { NumerologyValue, RelationshipType } from "@/lib/numerology";
 import type { ShareCardData } from "@/lib/share";
 
 export function PairCard({
   self,
   other,
+  relationship,
   relationshipLabel,
   sharePath,
   children,
 }: {
   self: { name: string; mision: NumerologyValue };
   other: { name: string; mision: NumerologyValue };
+  relationship: RelationshipType;
   relationshipLabel: string;
   sharePath: string;
   children?: React.ReactNode;
 }) {
   const pair = getPair(self.mision, other.mision);
   const who = `${self.name} y ${other.name}`;
+  const frame = BOND_FRAME[relationship];
+  const bond = pair.bonds[relationship];
   const connection: ShareCardData = {
     kicker: `${self.name} te comparte esta conexión con ${other.name}`,
     message: pair.headline,
@@ -46,6 +50,21 @@ export function PairCard({
         card={connection}
       >
         <p className="text-pretty text-base leading-relaxed text-mist-100">{pair.body}</p>
+      </PairSection>
+
+      <PairSection
+        label={frame.title}
+        text={`${who}\n${frame.title}\n${frame.lead}\n${bond}`}
+        section={`par:${relationship}`}
+        path={sharePath}
+        card={{
+          ...connection,
+          message: frame.title,
+          detail: `${frame.lead}\n${bond}`,
+        }}
+      >
+        <p className="text-pretty text-sm leading-relaxed text-mist-500">{frame.lead}</p>
+        <p className="mt-2 text-pretty text-base leading-relaxed text-mist-100">{bond}</p>
       </PairSection>
 
       <PairSection

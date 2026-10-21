@@ -12,6 +12,7 @@ import { missions as enMissions } from "./en/missions";
 import { pairs as enPairs } from "./en/pairs";
 import { destinies as esDestinies, shields as esShields, souls as esSouls } from "./es/aspects";
 import { missions as esMissions } from "./es/missions";
+import { pairBonds } from "./es/pair-bonds";
 import { pairs as esPairs } from "./es/pairs";
 import {
   DEFAULT_LOCALE,
@@ -19,7 +20,7 @@ import {
   type Locale,
   type LocaleContent,
   type MissionContent,
-  type PairContent,
+  type PairReading,
   type ShieldContent,
   type SoulContent,
 } from "./types";
@@ -80,21 +81,24 @@ export function getPair(
   a: NumerologyValue,
   b: NumerologyValue,
   locale: Locale = DEFAULT_LOCALE,
-): PairContent {
+): PairReading {
   const key = pairKey(a, b);
   const found = content[locale].pairs[key] ?? content[DEFAULT_LOCALE].pairs[key];
-  if (!found) {
+  const bonds = pairBonds[key];
+  if (!found || !bonds) {
     throw new Error(`Sin contenido de par para la clave ${key}`);
   }
-  return found;
+  return { ...found, bonds };
 }
 
+export { BOND_FRAME, pairBonds } from "./es/pair-bonds";
 export type {
   AspectReading,
   DestinyContent,
   Locale,
   MissionContent,
   PairContent,
+  PairReading,
   ShieldContent,
   SoulContent,
 } from "./types";

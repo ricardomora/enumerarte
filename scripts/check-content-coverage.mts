@@ -11,8 +11,9 @@
  */
 
 import { content } from "@/content";
+import { pairBonds } from "@/content/es/pair-bonds";
 import { type AspectReading, DEFAULT_LOCALE, LOCALES, type Locale } from "@/content/types";
-import { ALL_VALUES, allPairKeys } from "@/lib/numerology";
+import { ALL_VALUES, allPairKeys, RELATIONSHIP_TYPES } from "@/lib/numerology";
 
 const strict = process.argv.includes("--strict");
 
@@ -107,6 +108,18 @@ function auditLocale(locale: Locale): LocaleReport {
     }
     for (const field of ["headline", "body", "practice"] as const) {
       if (isBlank(entry[field])) malformed.push(`pair ${key}: ${field} vacío`);
+    }
+    if (locale === DEFAULT_LOCALE) {
+      const bonds = pairBonds[key];
+      if (!bonds) {
+        malformed.push(`pair ${key}: sin nota por parentesco`);
+      } else {
+        for (const relationship of RELATIONSHIP_TYPES) {
+          if (isBlank(bonds[relationship])) {
+            malformed.push(`pair ${key}: bonds.${relationship} vacío`);
+          }
+        }
+      }
     }
   }
 
