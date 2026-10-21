@@ -118,4 +118,4 @@ tiendas de aplicaciones.
 - Los 78 pares en inglés, y las lecturas de Personalidad, Alma y Expresión. La interfaz ya cambia de idioma; esos textos largos siguen en español hasta que existan.
 - Desplegar en Convex el campo `policyVersion` de las suscripciones. El código ya lo envía.
 - Imagen OG generada por lectura, para el bucle de compartir
-- `ads.txt` y el script de AdSense, cuando la cuenta entregue el publisher id. No inventar ese id.
+- El script de AdSense y `ads.txt` ya usan el publisher id que entregó la cuenta.

@@ -14,7 +14,7 @@ export const legalIdentity = {
   address: "Bogotá, Colombia",
   siteUrl: "https://www.enumerarte.com",
   email: CONTACT_EMAIL,
-  policyVersion: "2026-10-21",
+  policyVersion: "2026-10-21-2",
   updatedLabel: "21 de octubre de 2026",
 } as const;
 
@@ -99,15 +99,15 @@ export const privacyPolicy = {
       id: "encargados",
       title: "Quién más los trata",
       paragraphs: [
-        "El correo queda en Convex. El sitio se publica en Vercel, que procesa la conexión. Los eventos, sin el correo, se reenvían a PostHog en Estados Unidos. Si más adelante hay anuncios, Google puede tratar identificadores para mostrarlos y medirlos.",
+        "El correo queda en Convex. El sitio se publica en Vercel, que procesa la conexión. Los eventos, sin el correo, se reenvían a PostHog en Estados Unidos. Google trata identificadores para mostrar y medir los anuncios.",
       ],
     },
     {
       id: "anuncios",
       title: "Cookies y anuncios",
       paragraphs: [
-        "Hoy el sitio no carga un script de anuncios y no guarda una cookie propia de publicidad. El identificador de visita vive en el almacenamiento local, no en una cookie.",
-        "Si se activan anuncios, terceros, incluido Google, pueden guardar y leer cookies en el navegador, o usar identificadores y la dirección IP, para mostrar anuncios a partir de visitas a este sitio o a otros. El uso de cookies publicitarias de Google permite que Google y sus socios muestren anuncios según esas visitas.",
+        "El sitio carga el script de anuncios de Google AdSense. Enumerarte no guarda una cookie propia de publicidad. El identificador de visita vive en el almacenamiento local, no en una cookie.",
+        "Google y otros terceros pueden guardar y leer cookies en el navegador, o usar identificadores y la dirección IP, para mostrar anuncios a partir de visitas a este sitio o a otros. El uso de cookies publicitarias de Google permite que Google y sus socios muestren anuncios según esas visitas.",
         "Puedes rechazar la publicidad personalizada en la configuración de anuncios de Google, o en aboutads.info. El enlace de cómo Google usa los datos en sitios de sus socios está debajo.",
       ],
       links: [

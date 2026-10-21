@@ -39,15 +39,15 @@ export const privacyPolicyEn = {
       id: "encargados",
       title: "Who else handles it",
       paragraphs: [
-        "The email stays in Convex. The site is published on Vercel, which processes the connection. Events, without the email, are forwarded to PostHog in the United States. If ads are added later, Google may process identifiers in order to show and measure them.",
+        "The email stays in Convex. The site is published on Vercel, which processes the connection. Events, without the email, are forwarded to PostHog in the United States. Google processes identifiers in order to show and measure the ads.",
       ],
     },
     {
       id: "anuncios",
       title: "Cookies and ads",
       paragraphs: [
-        "Today the site does not load an ad script and does not store its own advertising cookie. The visit identifier lives in local storage, not in a cookie.",
-        "If ads are turned on, third parties, including Google, may store and read cookies in the browser, or use identifiers and the IP address, to show ads based on visits to this site or to others. Google's advertising cookies allow Google and its partners to show ads based on those visits.",
+        "The site loads Google AdSense's ad script. Enumerarte does not store its own advertising cookie. The visit identifier lives in local storage, not in a cookie.",
+        "Google and other third parties may store and read cookies in the browser, or use identifiers and the IP address, to show ads based on visits to this site or to others. Google's advertising cookies allow Google and its partners to show ads based on those visits.",
         "You can opt out of personalized advertising in Google's ads settings, or at aboutads.info. The link about how Google uses data on partner sites is below.",
       ],
       links: [

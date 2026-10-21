@@ -5,9 +5,8 @@ const isDev = process.env.NODE_ENV !== "production";
 /**
  * Cabeceras de una revisión de anuncios.
  *
- * El script de AdSense no está instalado. script-src y frame-src ya nombran
- * los dominios de Google para que, el día que haya un publisher id, el anuncio
- * pueda cargar sin abrir el resto del sitio.
+ * El script de AdSense ya está en el layout. script-src, connect-src y
+ * frame-src nombran solo los dominios que ese script necesita.
  */
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -24,7 +23,16 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://pagead2.googlesyndication.com https://www.google.com",
   "font-src 'self'",
-  ["connect-src 'self'", isDev ? "ws: wss:" : ""].filter(Boolean).join(" "),
+  [
+    "connect-src 'self'",
+    "https://pagead2.googlesyndication.com",
+    "https://googleads.g.doubleclick.net",
+    "https://adservice.google.com",
+    "https://ep1.adtrafficquality.google",
+    isDev ? "ws: wss:" : "",
+  ]
+    .filter(Boolean)
+    .join(" "),
   "frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
