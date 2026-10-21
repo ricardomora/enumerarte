@@ -104,16 +104,29 @@ export interface ShareGlyph {
   label: string;
 }
 
+/** Un nodo del mapa de números, con su color de la app. */
+export interface ShareMapNode {
+  value: string;
+  label: string;
+  subtitle: string;
+  color: string;
+}
+
 /** Lo que se dibuja en la imagen que viaja a WhatsApp, historias o TikTok. */
 export interface ShareCardData {
   /** Quién comparte, en una línea. */
   kicker: string;
   /** La frase que tiene que enganchar. */
   message: string;
-  /** Una línea más, con el tono de la relación o de esa parte. */
+  /** El texto de esa parte, completo. Los saltos de línea se respetan. */
   detail?: string;
   left: ShareGlyph;
   right?: ShareGlyph;
+  /** Si está, la imagen dibuja el mapa en vez de uno o dos números sueltos. */
+  map?: {
+    top: ShareMapNode;
+    bottom: readonly ShareMapNode[];
+  };
 }
 
 /** Primera frase, acotada, para que la imagen no se convierta en un muro de texto. */
@@ -144,5 +157,8 @@ export function publicShareUrl(url: string): string {
 
 export function shareCaption(card: ShareCardData, url: string): string {
   const link = publicShareUrl(url);
-  return [card.kicker, card.message, link].filter((line) => line.length > 0).join("\n");
+  const lines = [card.kicker, card.message, card.detail, link].filter((line): line is string =>
+    Boolean(line && line.length > 0),
+  );
+  return lines.join("\n");
 }

@@ -23,7 +23,9 @@ export function CalculationPanel({
     <details
       className="group rounded-xl border border-ink-700 bg-ink-900/60 px-4 py-3"
       onToggle={(toggleEvent) => {
-        if (toggleEvent.currentTarget.open) track("calculation_expanded");
+        if (toggleEvent.currentTarget.open) {
+          track("calculation_expanded", { section: "nucleo" });
+        }
       }}
     >
       <summary className="cursor-pointer list-none text-sm text-mist-500 transition hover:text-mist-300">

@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { contactCopy } from "@/content/contact";
-import { getVisitorId, track } from "@/lib/track";
+import { getVisitorId, trackOnce } from "@/lib/track";
 
 export function SubscribeForm() {
   const inputId = useId();
@@ -21,7 +21,7 @@ export function SubscribeForm() {
         body: JSON.stringify({ email, intent: "subscribe", visitorId: getVisitorId() }),
       });
       if (!response.ok) throw new Error(String(response.status));
-      track("subscribed");
+      trackOnce("subscribed");
       setStatus("done");
     } catch {
       setStatus("error");

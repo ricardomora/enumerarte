@@ -43,6 +43,7 @@ export {
   computePinnacles,
   computeProfile,
   isValidDate,
+  missionMaster,
   type NumerologyProfile,
   type PersonalCycles,
   type Pinnacles,

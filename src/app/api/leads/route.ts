@@ -53,14 +53,16 @@ export async function POST(request: Request) {
   );
 
   const apiKey = process.env.POSTHOG_KEY;
-  if (apiKey) {
+  // La suscripción ya sale por track("subscribed") hacia /api/events.
+  // Reenviarla aquí la contaría dos veces en PostHog.
+  if (apiKey && intent !== "subscribe") {
     try {
       await fetch(`${POSTHOG_HOST}/capture/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           api_key: apiKey,
-          event: intent === "subscribe" ? "subscribed" : "email_captured",
+          event: "email_captured",
           distinct_id: distinctId,
           properties: {
             mision: payload.mision,

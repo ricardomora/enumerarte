@@ -25,10 +25,35 @@ export type TrackEvent =
   | "subscribed"
   /** Puerta falsa: clic en un precio para un producto que todavía no existe. */
   | "price_clicked"
+  /** La puerta Premium se mostró, aunque nadie la tocara. */
+  | "price_shown"
   /** Alguien decide difundir su lectura. Entrada del bucle viral. */
   | "share_clicked"
   /** Alguien llega desde un enlace compartido. Salida del bucle viral. */
-  | "share_opened";
+  | "share_opened"
+  /** Desde el enlace compartido, la persona sigue a calcular lo suyo. */
+  | "share_continued"
+  /** Abrió una capa del mapa de números. */
+  | "layer_opened"
+  /** El formulario rechazó la fecha, el nombre o el parentesco. */
+  | "form_rejected"
+  /** Tocó correo, un motivo, el comentario o WhatsApp. */
+  | "contact_clicked"
+  /** Eligió otra persona en el mapa de La conexión. */
+  | "person_selected";
+
+const oncePerVisit = new Set<string>();
+
+/** Una vez por carga de la página. Evita duplicar al volver atrás o en modo estricto. */
+export function trackOnce(
+  event: TrackEvent,
+  properties: Record<string, unknown> = {},
+  key: string = event,
+): void {
+  if (oncePerVisit.has(key)) return;
+  oncePerVisit.add(key);
+  track(event, properties);
+}
 
 const VISITOR_KEY = "enumerarte.visitor";
 

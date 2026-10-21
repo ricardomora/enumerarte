@@ -21,7 +21,7 @@ import {
   type RelationshipType,
 } from "@/lib/numerology";
 import { buildPairPath } from "@/lib/share";
-import { track } from "@/lib/track";
+import { track, trackOnce } from "@/lib/track";
 
 type Step = "self" | "mission" | "pair";
 
@@ -63,12 +63,12 @@ export function ReadingFlow() {
   const activeOther = linked[viewIndex] ?? null;
 
   useEffect(() => {
-    track("flow_started");
+    trackOnce("flow_started");
   }, []);
 
   useEffect(() => {
-    if (step === "mission") track("second_person_prompted");
-    if (step === "pair") track("pair_viewed");
+    if (step === "mission") trackOnce("second_person_prompted");
+    if (step === "pair") trackOnce("pair_viewed");
   }, [step]);
 
   function handleSelf(person: PersonInput) {
@@ -94,6 +94,7 @@ export function ReadingFlow() {
       selfMision: self?.mision,
       linkCount: nextLinked.length,
       relationship: resolved.relationship,
+      hasName: resolved.name.trim().length > 0,
     });
     setStep("pair");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -186,6 +187,7 @@ export function ReadingFlow() {
                     activeIndex={viewIndex}
                     onSelect={(index) => {
                       setViewIndex(index);
+                      trackOnce("person_selected", { index }, `person_selected:${index}`);
                       document
                         .getElementById("pair-reading")
                         ?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -208,7 +210,11 @@ export function ReadingFlow() {
           {(step === "mission" || step === "pair") && self ? (
             <div className="sticky bottom-0 min-w-0 border-t border-ink-700/80 bg-ink-950/90 px-5 py-4 backdrop-blur-md sm:px-7">
               {!atLinkLimit ? (
-                <LinkPersonForm submitLabel="Ver conexión" onSubmit={handleLink} />
+                <LinkPersonForm
+                  submitLabel="Ver conexión"
+                  onSubmit={handleLink}
+                  addingAnother={linked.length > 0}
+                />
               ) : null}
               <SubscribeForm />
             </div>

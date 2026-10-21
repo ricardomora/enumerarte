@@ -140,4 +140,15 @@ describe("shareCaption", () => {
     const caption = shareCaption(card, "https://enumerarte.com/par/11x33?a=Ana&b=Ricardo");
     assert.ok(caption.endsWith("https://enumerarte.com/par/11x33?a=Ana&b=Ricardo"));
   });
+
+  test("incluye el texto completo de la sección", () => {
+    const caption = shareCaption(
+      { ...card, detail: "Primera frase. Segunda frase." },
+      "http://localhost:3000/par/11x33",
+    );
+    assert.equal(
+      caption,
+      "Ana te comparte su conexión con Ricardo\nSensibilidad extrema\nPrimera frase. Segunda frase.",
+    );
+  });
 });

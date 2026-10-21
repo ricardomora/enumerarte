@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { RELATION_LABELS } from "@/components/link-person-form";
 import { EnergyPulse, NodeOrb } from "@/components/node-orb";
+import { SectionShare } from "@/components/section-share";
+import { getPair } from "@/content";
 import type { NumerologyValue, RelationshipType } from "@/lib/numerology";
+import type { ShareCardData, ShareMapNode } from "@/lib/share";
+
+const CONNECTIONS_MAP_TITLE = "Este es tu mapa de conexiones";
 
 export interface RelationNode {
   name: string;
@@ -13,8 +18,9 @@ export interface RelationNode {
   birthKey: string;
 }
 
-const VIEW = { width: 320, height: 380 };
-const SELF = { x: 160, y: 286 };
+const VIEW = { width: 320, height: 360 };
+const SELF = { x: 160, y: 108 };
+const BRANCH_Y = 248;
 
 const STARS = [
   [18, 22, 1.1],
@@ -84,8 +90,11 @@ const RELATION_TONE: Record<
 };
 
 function personPosition(index: number, total: number): { x: number; y: number } {
-  if (total <= 1) return { x: 160, y: 56 };
-  return index === 0 ? { x: 64, y: 96 } : { x: 256, y: 96 };
+  if (total <= 1) return { x: 160, y: BRANCH_Y };
+  const left = 80;
+  const right = 240;
+  const step = (right - left) / (total - 1);
+  return { x: left + step * index, y: BRANCH_Y };
 }
 
 export function RelationMap({
@@ -107,96 +116,156 @@ export function RelationMap({
   }));
 
   return (
-    <section className="space-y-3" aria-label="Mapa de personas">
-      <div className="relative overflow-hidden rounded-2xl border border-ink-700 bg-[#07060f]">
-        <svg
-          aria-hidden
-          className="pointer-events-none absolute inset-0 size-full"
-          viewBox={`0 0 ${VIEW.width} ${VIEW.height}`}
-          preserveAspectRatio="xMidYMid meet"
-        >
-          <title>Estrellas</title>
-          {STARS.map(([x, y, r], index) => (
-            <circle
-              key={`${x}-${y}`}
-              cx={x}
-              cy={y}
-              r={r}
-              fill="rgba(244,242,255,0.85)"
-              className="animate-twinkle"
-              style={{ animationDelay: `${(index % 7) * 0.35}s` }}
-            />
-          ))}
-          {placed.map((node) => {
-            const tone = RELATION_TONE[node.person.relationship];
-            const linked = node.index === activeIndex;
-            return (
-              <line
-                key={node.person.birthKey}
-                x1={SELF.x}
-                y1={SELF.y}
-                x2={node.x}
-                y2={node.y}
-                stroke={linked ? tone.hex : "rgba(244,242,255,0.22)"}
-                strokeWidth={linked ? 1.6 : 1.1}
-              />
-            );
-          })}
-          {placed.map((node) =>
-            node.index === activeIndex ? (
-              <EnergyPulse
-                key={`${node.person.birthKey}-pulse`}
-                x1={SELF.x}
-                y1={SELF.y}
-                x2={node.x}
-                y2={node.y}
-                color={RELATION_TONE[node.person.relationship].hex}
-              />
-            ) : null,
-          )}
-        </svg>
-
-        <div className="relative" style={{ aspectRatio: `${VIEW.width} / ${VIEW.height}` }}>
-          <NodeCircle
-            x={SELF.x}
-            y={SELF.y}
-            value={self.mision}
-            title={self.name}
-            subtitle="Tú"
-            tone={SELF_TONE}
-            active
+    <section aria-label="Mapa de personas">
+      <div className="overflow-hidden rounded-2xl border border-ink-700 bg-[#07060f]">
+        <div className="flex justify-end px-3 pt-3">
+          <SectionShare
+            section="mapa-de-personas"
+            text={peopleShareText(self, people)}
+            card={peopleShareCard(self, people)}
           />
-          {placed.map((node) => (
+        </div>
+        <p className="px-4 text-center text-pretty text-base font-medium leading-snug text-mist-100">
+          {CONNECTIONS_MAP_TITLE}
+        </p>
+        <div className="relative">
+          <svg
+            aria-hidden
+            className="pointer-events-none absolute inset-0 size-full"
+            viewBox={`0 0 ${VIEW.width} ${VIEW.height}`}
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <title>Estrellas</title>
+            {STARS.map(([x, y, r], index) => (
+              <circle
+                key={`${x}-${y}`}
+                cx={x}
+                cy={y}
+                r={r}
+                fill="rgba(244,242,255,0.85)"
+                className="animate-twinkle"
+                style={{ animationDelay: `${(index % 7) * 0.35}s` }}
+              />
+            ))}
+            {placed.map((node) => {
+              const tone = RELATION_TONE[node.person.relationship];
+              const linked = node.index === activeIndex;
+              return (
+                <line
+                  key={node.person.birthKey}
+                  x1={SELF.x}
+                  y1={SELF.y}
+                  x2={node.x}
+                  y2={node.y}
+                  stroke={linked ? tone.hex : "rgba(244,242,255,0.22)"}
+                  strokeWidth={linked ? 1.6 : 1.1}
+                />
+              );
+            })}
+            {placed.map((node) =>
+              node.index === activeIndex ? (
+                <EnergyPulse
+                  key={`${node.person.birthKey}-pulse`}
+                  x1={SELF.x}
+                  y1={SELF.y}
+                  x2={node.x}
+                  y2={node.y}
+                  color={RELATION_TONE[node.person.relationship].hex}
+                />
+              ) : null,
+            )}
+          </svg>
+
+          <div className="relative" style={{ aspectRatio: `${VIEW.width} / ${VIEW.height}` }}>
             <NodeCircle
-              key={node.person.birthKey}
-              x={node.x}
-              y={node.y}
-              value={node.person.mision}
-              title={node.person.name}
-              subtitle={RELATION_LABELS[node.person.relationship]}
-              tone={RELATION_TONE[node.person.relationship]}
-              active={node.index === activeIndex}
-              burst={bursts[node.index] ?? 0}
-              onSelect={() => {
-                setBursts((current) => ({
-                  ...current,
-                  [node.index]: (current[node.index] ?? 0) + 1,
-                }));
-                onSelect(node.index);
-              }}
+              x={SELF.x}
+              y={SELF.y}
+              value={self.mision}
+              title={self.name}
+              subtitle="Tú"
+              tone={SELF_TONE}
+              active
+              labelAbove
             />
-          ))}
+            {placed.map((node) => (
+              <NodeCircle
+                key={node.person.birthKey}
+                x={node.x}
+                y={node.y}
+                value={node.person.mision}
+                title={node.person.name}
+                subtitle={RELATION_LABELS[node.person.relationship]}
+                tone={RELATION_TONE[node.person.relationship]}
+                active={node.index === activeIndex}
+                burst={bursts[node.index] ?? 0}
+                onSelect={() => {
+                  setBursts((current) => ({
+                    ...current,
+                    [node.index]: (current[node.index] ?? 0) + 1,
+                  }));
+                  onSelect(node.index);
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
-      {people.length > 1 ? (
-        <p className="text-center text-xs text-mist-500">Toca una persona para ver esa relación.</p>
-      ) : (
-        <p className="text-center text-xs text-mist-500">
-          Tú y quien te importa, en el mismo mapa.
-        </p>
-      )}
     </section>
   );
+}
+
+function peopleNode(
+  name: string,
+  mision: NumerologyValue,
+  subtitle: string,
+  color: string,
+): ShareMapNode {
+  return { value: String(mision), label: name, subtitle, color };
+}
+
+function peopleShareCard(
+  self: { name: string; mision: NumerologyValue },
+  people: RelationNode[],
+): ShareCardData {
+  const who = self.name.trim().split(/\s+/)[0] || "Alguien";
+  const lines = [
+    `${self.name} ${self.mision} · Tú`,
+    ...people.map(
+      (person) => `${person.name} ${person.mision} · ${RELATION_LABELS[person.relationship]}`,
+    ),
+    "",
+    ...people.map((person) => {
+      const pair = getPair(self.mision, person.mision);
+      return `${person.name}: ${pair.headline}`;
+    }),
+  ];
+  return {
+    kicker: `${who} te comparte su mapa de conexiones`,
+    message: CONNECTIONS_MAP_TITLE,
+    detail: lines.join("\n"),
+    left: { value: self.mision, label: self.name },
+    map: {
+      top: peopleNode(self.name, self.mision, "Tú", SELF_TONE.hex),
+      bottom: people.map((person) =>
+        peopleNode(
+          person.name,
+          person.mision,
+          RELATION_LABELS[person.relationship],
+          RELATION_TONE[person.relationship].hex,
+        ),
+      ),
+    },
+  };
+}
+
+function peopleShareText(
+  self: { name: string; mision: NumerologyValue },
+  people: RelationNode[],
+): string {
+  const card = peopleShareCard(self, people);
+  return [card.kicker, card.message, card.detail]
+    .filter((line) => line && line.length > 0)
+    .join("\n");
 }
 
 function NodeCircle({
@@ -208,6 +277,7 @@ function NodeCircle({
   tone,
   active,
   burst = 0,
+  labelAbove = false,
   onSelect,
 }: {
   x: number;
@@ -218,6 +288,7 @@ function NodeCircle({
   tone: { ring: string; text: string; glowClass: string; label: string; hex: string };
   active: boolean;
   burst?: number;
+  labelAbove?: boolean;
   onSelect?: () => void;
 }) {
   const circle = (
@@ -231,9 +302,25 @@ function NodeCircle({
         active={active}
         burst={burst}
       />
-      <span className="absolute top-full left-1/2 mt-1.5 w-28 -translate-x-1/2 text-center leading-tight">
-        <span className={`block text-[11px] font-medium sm:text-xs ${tone.label}`}>{title}</span>
-        <span className="mt-0.5 block text-[10px] text-mist-500">{subtitle}</span>
+      <span
+        className={`absolute left-1/2 -translate-x-1/2 text-center leading-tight ${
+          labelAbove ? "bottom-full mb-1.5 w-28" : "top-full mt-1.5 w-[5.5rem] sm:w-28"
+        }`}
+      >
+        <span
+          className={`block font-medium ${tone.label} ${
+            labelAbove ? "text-[11px] sm:text-xs" : "text-[13px] sm:text-sm"
+          }`}
+        >
+          {title}
+        </span>
+        <span
+          className={`mt-0.5 block text-mist-500 ${
+            labelAbove ? "text-[10px]" : "text-[11px] sm:text-xs"
+          }`}
+        >
+          {subtitle}
+        </span>
       </span>
     </>
   );

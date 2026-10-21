@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect } from "react";
-import { track } from "@/lib/track";
+import { trackOnce } from "@/lib/track";
 
 /**
  * Registra la llegada desde un enlace compartido.
@@ -12,8 +13,22 @@ import { track } from "@/lib/track";
  */
 export function ShareArrival({ pair }: { pair: string }) {
   useEffect(() => {
-    track("share_opened", { pair });
+    trackOnce("share_opened", { pair }, `share_opened:${pair}`);
   }, [pair]);
 
   return null;
+}
+
+export function ShareContinueLink({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link href="/" className={className} onClick={() => trackOnce("share_continued")}>
+      {children}
+    </Link>
+  );
 }

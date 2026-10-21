@@ -55,10 +55,10 @@ describe("registro de contenido", () => {
     const ricardo = computeMision({ day: 15, month: 4, year: 1990 });
     const ana = computeMision({ day: 20, month: 7, year: 1988 });
 
-    assert.equal(ricardo, 11);
+    assert.equal(ricardo, 2);
     assert.equal(ana, 8);
-    assert.equal(getMission(ricardo).title, "El que siente de más");
+    assert.equal(getMission(ricardo).title, "El que sostiene el vínculo");
     assert.equal(getMission(ana).title, "El que administra la realidad");
-    assert.equal(getPair(ricardo, ana).headline, "Presión y sensibilidad");
+    assert.equal(getPair(ricardo, ana).headline, "El tono y el resultado");
   });
 });

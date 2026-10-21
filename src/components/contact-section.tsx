@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { CONTACT_EMAIL, contactCopy, WHATSAPP_DISPLAY } from "@/content/contact";
 import { mailTo, whatsAppLink } from "@/lib/contact";
+import { track } from "@/lib/track";
 
 export function ContactSection() {
   const messageId = useId();
@@ -20,6 +21,7 @@ export function ContactSection() {
     }
     setError(null);
     setOpened(true);
+    track("contact_clicked", { channel: "comentario" });
     window.location.href = mailTo(contactCopy.feedbackSubject, comment);
   }
 
@@ -34,6 +36,7 @@ export function ContactSection() {
         </p>
         <a
           href={mailTo("Hola desde Enumerarte")}
+          onClick={() => track("contact_clicked", { channel: "correo" })}
           className="inline-block text-sm font-medium text-[#f5a524] underline decoration-[#f5a524]/40 underline-offset-4"
         >
           {CONTACT_EMAIL}
@@ -45,6 +48,7 @@ export function ContactSection() {
           <a
             key={reason.id}
             href={mailTo(reason.subject)}
+            onClick={() => track("contact_clicked", { channel: "motivo", reason: reason.id })}
             className="rounded-full border border-ink-600 px-4 py-2 text-sm text-mist-100 transition hover:border-[#f5a524]/60 hover:text-[#f8d48a]"
           >
             {reason.label}
@@ -95,6 +99,7 @@ export function ContactSection() {
           href={whatsAppLink("Hola, escribo desde Enumerarte.")}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => track("contact_clicked", { channel: "whatsapp" })}
           className="inline-block text-sm font-medium text-[#f5a524]"
         >
           {WHATSAPP_DISPLAY}
@@ -103,6 +108,7 @@ export function ContactSection() {
           href={whatsAppLink("Hola, escribo desde Enumerarte.")}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => track("contact_clicked", { channel: "whatsapp" })}
           className="block w-full rounded-xl border border-[#f5a524]/50 bg-[#f5a524]/15 px-5 py-3 text-sm font-medium text-[#f8d48a] transition hover:bg-[#f5a524]/25"
         >
           {contactCopy.whatsappAction}

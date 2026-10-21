@@ -8,6 +8,7 @@ import {
   computePinnacles,
   computeProfile,
   isValidDate,
+  missionMaster,
 } from "./profile.js";
 
 const REFERENCE: CalendarDate = { day: 15, month: 4, year: 1990 };
@@ -39,12 +40,26 @@ describe("isValidDate", () => {
 });
 
 describe("computeMision", () => {
-  test("15/04/1990 da el maestro 11 (6 + 4 + 19 = 29 -> 11)", () => {
-    assert.equal(computeMision(REFERENCE), 11);
+  test("15/04/1990 da 2 y pasa por el maestro 11 (6 + 4 + 19 = 29 -> 11 -> 2)", () => {
+    assert.equal(computeMision(REFERENCE), 2);
+    assert.equal(missionMaster(REFERENCE), 11);
   });
 
-  test("09/09/2002 da el maestro 22 (9 + 9 + 4 = 22)", () => {
-    assert.equal(computeMision({ day: 9, month: 9, year: 2002 }), 22);
+  test("09/09/2002 da 4 y pasa por el maestro 22 (9 + 9 + 4 = 22 -> 4)", () => {
+    assert.equal(computeMision({ day: 9, month: 9, year: 2002 }), 4);
+    assert.equal(missionMaster({ day: 9, month: 9, year: 2002 }), 22);
+  });
+
+  test("31/08/1992 da 6 y pasa por el maestro 33 (4 + 8 + 21 = 33 -> 6)", () => {
+    const date = { day: 31, month: 8, year: 1992 };
+    assert.equal(computeMision(date), 6);
+    assert.equal(missionMaster(date), 33);
+  });
+
+  test("02/09/1771 da 9 y no pasa por un maestro (2 + 9 + 16 = 27 -> 9)", () => {
+    const date = { day: 2, month: 9, year: 1771 };
+    assert.equal(computeMision(date), 9);
+    assert.equal(missionMaster(date), null);
   });
 
   test("01/01/2000 da 4", () => {
@@ -135,13 +150,13 @@ describe("computePersonalCycles", () => {
 describe("computeProfile", () => {
   test("compone el perfil completo y el nombre es opcional", () => {
     const withName = computeProfile({ birthDate: REFERENCE, fullName: "Ricardo" });
-    assert.equal(withName.mision, 11);
+    assert.equal(withName.mision, 2);
     assert.equal(withName.regaloDivino, 6);
     assert.equal(withName.name?.destino, 5);
 
     const withoutName = computeProfile({ birthDate: REFERENCE });
     assert.equal(withoutName.name, null);
-    assert.equal(withoutName.mision, 11);
+    assert.equal(withoutName.mision, 2);
   });
 
   test("un nombre en blanco se trata como ausente", () => {

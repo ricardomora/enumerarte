@@ -1,11 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { NumberGlyph } from "@/components/number-glyph";
 import type { LayerTone } from "@/components/profile-layers";
 import { SectionShare } from "@/components/section-share";
 import type { AspectReading } from "@/content/types";
 import type { NumerologyValue } from "@/lib/numerology";
-import { clipShareLine, type ShareCardData } from "@/lib/share";
+import type { ShareCardData } from "@/lib/share";
 
 interface AspectStoryProps {
   reading: AspectReading;
@@ -40,7 +41,7 @@ function numberCard(
   return {
     kicker: `${who} te comparte su ${layerLabel}`,
     message: heading,
-    detail: clipShareLine(body),
+    detail: body,
     left: { value, label: layerLabel },
   };
 }
@@ -54,6 +55,8 @@ export function AspectStory({
   afterHeader,
   children,
 }: AspectStoryProps) {
+  const [moreOpen, setMoreOpen] = useState(false);
+
   return (
     <article key={tone.hex} className="animate-rise space-y-8">
       <header className="space-y-5 text-center">
@@ -92,14 +95,14 @@ export function AspectStory({
             layerLabel,
             reading.value,
             "Lo que aportas",
-            reading.strengths.join(" "),
+            reading.strengths.join("\n"),
           )}
           card={numberCard(
             name,
             layerLabel,
             reading.value,
             "Lo que aportas",
-            reading.strengths.join(" "),
+            reading.strengths.join("\n"),
           )}
           section={`${layerLabel}:fortalezas`}
           accent={tone.hex}
@@ -119,14 +122,14 @@ export function AspectStory({
             layerLabel,
             reading.value,
             "Dónde crecer",
-            reading.frictions.join(" "),
+            reading.frictions.join("\n"),
           )}
           card={numberCard(
             name,
             layerLabel,
             reading.value,
             "Dónde crecer",
-            reading.frictions.join(" "),
+            reading.frictions.join("\n"),
           )}
           section={`${layerLabel}:fricciones`}
           accent={tone.hex}
@@ -142,74 +145,113 @@ export function AspectStory({
       </div>
 
       <div className="space-y-3">
-        <ReadingBlock
-          label="Bajo presión"
-          share={shareText(name, layerLabel, reading.value, "Bajo presión", reading.underPressure)}
-          card={numberCard(name, layerLabel, reading.value, "Bajo presión", reading.underPressure)}
-          section={`${layerLabel}:presion`}
-          accent={tone.hex}
+        <button
+          type="button"
+          aria-expanded={moreOpen}
+          onClick={() => setMoreOpen((open) => !open)}
+          className="w-full rounded-xl border border-ink-700 bg-ink-900/50 px-4 py-3 text-left text-sm leading-relaxed text-mist-100 transition hover:border-[#f5a524]/50 hover:text-[#f8d48a]"
         >
-          <p className="text-pretty text-sm leading-relaxed text-mist-300">
-            {reading.underPressure}
-          </p>
-        </ReadingBlock>
-        <ReadingBlock
-          label="En tus vínculos"
-          share={shareText(
-            name,
-            layerLabel,
-            reading.value,
-            "En tus vínculos",
-            reading.inRelationships,
-          )}
-          card={numberCard(
-            name,
-            layerLabel,
-            reading.value,
-            "En tus vínculos",
-            reading.inRelationships,
-          )}
-          section={`${layerLabel}:vinculos`}
-          accent={tone.hex}
-        >
-          <p className="text-pretty text-sm leading-relaxed text-mist-300">
-            {reading.inRelationships}
-          </p>
-        </ReadingBlock>
-        <ReadingBlock
-          label="Lo que otros ven"
-          share={shareText(name, layerLabel, reading.value, "Lo que otros ven", reading.blindSpot)}
-          card={numberCard(name, layerLabel, reading.value, "Lo que otros ven", reading.blindSpot)}
-          section={`${layerLabel}:punto-ciego`}
-          accent={tone.hex}
-        >
-          <p className="text-pretty text-sm leading-relaxed text-mist-300">{reading.blindSpot}</p>
-        </ReadingBlock>
+          {moreOpen
+            ? "Ocultar bajo presión, vínculos, lo que otros ven y la señal de la semana"
+            : "Dale click aquí si quieres leer más sobre cómo eres bajo presión, en tus vínculos, cómo otros te ven y el consejo de la semana"}
+        </button>
+        {moreOpen ? (
+          <div className="space-y-3">
+            <ReadingBlock
+              label="Bajo presión"
+              share={shareText(
+                name,
+                layerLabel,
+                reading.value,
+                "Bajo presión",
+                reading.underPressure,
+              )}
+              card={numberCard(
+                name,
+                layerLabel,
+                reading.value,
+                "Bajo presión",
+                reading.underPressure,
+              )}
+              section={`${layerLabel}:presion`}
+              accent={tone.hex}
+            >
+              <p className="text-pretty text-sm leading-relaxed text-mist-300">
+                {reading.underPressure}
+              </p>
+            </ReadingBlock>
+            <ReadingBlock
+              label="En tus vínculos"
+              share={shareText(
+                name,
+                layerLabel,
+                reading.value,
+                "En tus vínculos",
+                reading.inRelationships,
+              )}
+              card={numberCard(
+                name,
+                layerLabel,
+                reading.value,
+                "En tus vínculos",
+                reading.inRelationships,
+              )}
+              section={`${layerLabel}:vinculos`}
+              accent={tone.hex}
+            >
+              <p className="text-pretty text-sm leading-relaxed text-mist-300">
+                {reading.inRelationships}
+              </p>
+            </ReadingBlock>
+            <ReadingBlock
+              label="Lo que otros ven"
+              share={shareText(
+                name,
+                layerLabel,
+                reading.value,
+                "Lo que otros ven",
+                reading.blindSpot,
+              )}
+              card={numberCard(
+                name,
+                layerLabel,
+                reading.value,
+                "Lo que otros ven",
+                reading.blindSpot,
+              )}
+              section={`${layerLabel}:punto-ciego`}
+              accent={tone.hex}
+            >
+              <p className="text-pretty text-sm leading-relaxed text-mist-300">
+                {reading.blindSpot}
+              </p>
+            </ReadingBlock>
+            <ReadingBlock
+              label="Señal para esta semana"
+              share={shareText(
+                name,
+                layerLabel,
+                reading.value,
+                "Señal para esta semana",
+                reading.microPractice,
+              )}
+              card={numberCard(
+                name,
+                layerLabel,
+                reading.value,
+                "Señal para esta semana",
+                reading.microPractice,
+              )}
+              section={`${layerLabel}:practica`}
+              accent={tone.hex}
+            >
+              <p className="text-pretty text-base leading-relaxed text-mist-100">
+                {reading.microPractice}
+              </p>
+            </ReadingBlock>
+          </div>
+        ) : null}
       </div>
-
-      <ReadingBlock
-        label="Señal para esta semana"
-        share={shareText(
-          name,
-          layerLabel,
-          reading.value,
-          "Señal para esta semana",
-          reading.microPractice,
-        )}
-        card={numberCard(
-          name,
-          layerLabel,
-          reading.value,
-          "Señal para esta semana",
-          reading.microPractice,
-        )}
-        section={`${layerLabel}:practica`}
-        accent={tone.hex}
-      >
-        <p className="text-pretty text-base leading-relaxed text-mist-100">
-          {reading.microPractice}
-        </p>
-      </ReadingBlock>
 
       {children}
     </article>
@@ -241,7 +283,7 @@ function ReadingBlock({
       }}
     >
       <div className="flex items-start justify-between gap-3">
-        <h3 className="pt-1 text-xs uppercase tracking-wider" style={{ color: accent }}>
+        <h3 className="min-w-0 pt-1 text-xs uppercase tracking-wider" style={{ color: accent }}>
           {label}
         </h3>
         <SectionShare section={section} text={share} card={card} />

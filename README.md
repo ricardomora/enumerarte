@@ -63,9 +63,10 @@ Decisiones que conviene no revertir sin pensarlo:
   nacimiento no tiene huso horario. Usar `Date` produce errores de un día según
   el servidor, que para una audiencia latinoamericana significaría un número
   equivocado para todos los nacidos el día 1.
-- **`reduce` preserva los maestros, `reduceToDigit` no.** Los pináculos y
-  desafíos se calculan sobre componentes de un solo dígito; el resultado sí
-  admite 11, 22 y 33.
+- **`reduce` preserva los maestros, `reduceToDigit` no.** Los pináculos,
+  desafíos y números de nombre se detienen en 11, 22 o 33. El camino de vida
+  que se lee es el dígito raíz; si la suma pasó por un maestro, ese dato va
+  aparte y no cambia el número ni el par.
 - **Convenciones de nombre documentadas en el código.** Tildes ignoradas, Ñ como
   N, Y contextual. La literatura no es unánime, así que la elección está escrita
   y es configurable en lugar de implícita.

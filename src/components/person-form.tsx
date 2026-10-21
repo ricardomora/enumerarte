@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import { isFutureDate, todayCalendarDate } from "@/lib/date-input";
 import { type CalendarDate, isValidDate } from "@/lib/numerology";
+import { track } from "@/lib/track";
 
 export interface PersonInput {
   name: string;
@@ -75,37 +76,42 @@ export function PersonForm({
     formEvent.preventDefault();
 
     if (!day || !month || !year) {
-      setError("Elige día, mes y año.");
+      reject("missing_date", "Elige día, mes y año.");
       return;
     }
 
     const birthDate = { day: Number(day), month: Number(month), year: Number(year) };
     if (!isValidDate(birthDate)) {
-      setError("Revisa la fecha: no parece un día real.");
+      reject("invalid_date", "Revisa la fecha: no parece un día real.");
       return;
     }
 
     if (isFutureDate(birthDate)) {
-      setError("Esa fecha está en el futuro.");
+      reject("future_date", "Esa fecha está en el futuro.");
       return;
     }
 
     const trimmed = name.trim();
     if (trimmed.length < 2) {
-      setError("Escribe al menos un nombre.");
+      reject("short_name", "Escribe al menos un nombre.");
       return;
     }
 
     if (requireFullName) {
       const parts = trimmed.split(/\s+/).filter((part) => part.length >= 2);
       if (parts.length < 2) {
-        setError("Escribe nombre y apellidos, como en tu documento.");
+        reject("incomplete_name", "Escribe nombre y apellidos, como en tu documento.");
         return;
       }
     }
 
     setError(null);
     onSubmit({ name: trimmed, birthDate });
+  }
+
+  function reject(reason: string, message: string) {
+    track("form_rejected", { step: "self", reason });
+    setError(message);
   }
 
   return (

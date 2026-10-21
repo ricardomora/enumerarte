@@ -7,8 +7,8 @@
  * además la razón por la que un ingeniero confía en la herramienta.
  */
 
-import type { CalendarDate } from "./profile";
-import { digitSum, isMasterNumber, type NumerologyValue } from "./reduce";
+import { type CalendarDate, missionMaster } from "./profile";
+import { digitSum, isMasterNumber, type MasterNumber, type NumerologyValue } from "./reduce";
 
 export interface ExplainStep {
   /** Lo que se suma, ya escrito para mostrar: "1 + 5". */
@@ -24,6 +24,8 @@ export interface MisionExplanation {
   initialTotal: number;
   steps: ExplainStep[];
   result: NumerologyValue;
+  /** 11, 22 o 33 si la suma pasó por uno. La lectura usa `result`, no este. */
+  master: MasterNumber | null;
 }
 
 function digitsOf(n: number): number[] {
@@ -80,7 +82,7 @@ export function explainMision(
   ];
 
   const initialTotal = parts.reduce((sum, part) => sum + part.total, 0);
-  const steps = explainReduction(initialTotal);
+  const steps = explainToDigit(initialTotal);
   const last = steps.at(-1);
 
   return {
@@ -88,5 +90,23 @@ export function explainMision(
     initialTotal,
     steps,
     result: (last ? last.result : initialTotal) as NumerologyValue,
+    master: missionMaster(date),
   };
+}
+
+/** Igual que `explainReduction`, pero no se detiene en 11, 22 ni 33. */
+function explainToDigit(from: number): ExplainStep[] {
+  const steps: ExplainStep[] = [];
+  let current = from;
+  while (current > 9) {
+    const digits = digitsOf(current);
+    const next = digitSum(current);
+    steps.push({
+      expression: digits.join(" + "),
+      result: next,
+      stoppedAtMaster: false,
+    });
+    current = next;
+  }
+  return steps;
 }

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { NumberGlyph } from "@/components/number-glyph";
-import { ShareArrival } from "@/components/share-arrival";
+import { ShareArrival, ShareContinueLink } from "@/components/share-arrival";
 import { SiteFooter } from "@/components/site-footer";
 import { getMission, getPair } from "@/content";
 import { allPairKeys, parsePairKey } from "@/lib/numerology";
@@ -110,12 +109,9 @@ export default async function PairPage(props: PageProps<"/par/[pair]">) {
             Descubre tu Camino de Vida y mira qué señales conectan con las personas de tu vida.
           </p>
         </div>
-        <Link
-          href="/"
-          className="inline-block rounded-xl bg-accent-500 px-6 py-3.5 font-medium text-white transition hover:bg-accent-400"
-        >
+        <ShareContinueLink className="inline-block rounded-xl bg-accent-500 px-6 py-3.5 font-medium text-white transition hover:bg-accent-400">
           Revelar mi mapa
-        </Link>
+        </ShareContinueLink>
       </section>
 
       <SiteFooter className="mt-12" note="Enumerarte · Tu mapa y tus vínculos" />

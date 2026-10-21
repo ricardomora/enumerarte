@@ -4,10 +4,17 @@ import { useRef, useState } from "react";
 import { AspectStory } from "@/components/aspect-story";
 import { CalculationPanel } from "@/components/calculation-panel";
 import { CosmicMap } from "@/components/cosmic-map";
+import { MasterAside } from "@/components/master-aside";
 import { NameCalculationPanel } from "@/components/name-calculation-panel";
 import { LAYER_COPY, LAYER_TONE, layerTitle, type ProfileLayer } from "@/components/profile-layers";
 import { getDestiny, getMission, getShield, getSoul } from "@/content";
-import type { CalendarDate, NameNumbers, NumerologyValue } from "@/lib/numerology";
+import {
+  type CalendarDate,
+  missionMaster,
+  type NameNumbers,
+  type NumerologyValue,
+} from "@/lib/numerology";
+import { trackOnce } from "@/lib/track";
 
 interface ProfileMapProps {
   name: string;
@@ -42,11 +49,19 @@ export function ProfileMap({ name, birthDate, mision, nameNumbers }: ProfileMapP
 
   function selectLayer(next: ProfileLayer) {
     setLayer(next);
+    trackOnce("layer_opened", { layer: next }, `layer_opened:${next}`);
     readingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  const master = missionMaster(birthDate);
   const map = (
-    <CosmicMap mision={mision} nameNumbers={nameNumbers} active={layer} onSelect={selectLayer} />
+    <CosmicMap
+      name={name}
+      mision={mision}
+      nameNumbers={nameNumbers}
+      active={layer}
+      onSelect={selectLayer}
+    />
   );
 
   return (
@@ -72,6 +87,7 @@ export function ProfileMap({ name, birthDate, mision, nameNumbers }: ProfileMapP
           >
             <CalculationPanel birthDate={birthDate} subject={LAYER_COPY.nucleo.title} />
             {map}
+            {master ? <MasterAside master={master} root={mision} /> : null}
           </AspectStory>
         ) : null}
 

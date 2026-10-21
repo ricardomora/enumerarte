@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { track } from "@/lib/track";
+import { useEffect, useState } from "react";
+import { track, trackOnce } from "@/lib/track";
 
 /**
  * Puerta falsa de premium único.
@@ -20,6 +20,10 @@ const PREMIUM_FEATURES = [
 
 export function PriceGate({ compact = false }: { compact?: boolean }) {
   const [clicked, setClicked] = useState(false);
+
+  useEffect(() => {
+    trackOnce("price_shown", { tier: "premium" });
+  }, []);
 
   function handleClick() {
     track("price_clicked", { tier: "premium" });

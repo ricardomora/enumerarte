@@ -1,7 +1,7 @@
 import { SectionShare } from "@/components/section-share";
 import { getPair } from "@/content";
 import type { NumerologyValue } from "@/lib/numerology";
-import { clipShareLine, type ShareCardData } from "@/lib/share";
+import type { ShareCardData } from "@/lib/share";
 
 export function PairCard({
   self,
@@ -21,7 +21,7 @@ export function PairCard({
   const connection: ShareCardData = {
     kicker: `${self.name} te comparte esta conexión con ${other.name}`,
     message: pair.headline,
-    detail: clipShareLine(pair.body),
+    detail: pair.body,
     left: { value: self.mision, label: self.name },
     right: { value: other.mision, label: other.name },
   };
@@ -57,7 +57,7 @@ export function PairCard({
         card={{
           ...connection,
           message: "Señal para esta semana",
-          detail: clipShareLine(pair.practice),
+          detail: pair.practice,
         }}
       >
         <p className="text-pretty text-base leading-relaxed text-mist-100">{pair.practice}</p>
@@ -93,7 +93,7 @@ function PairSection({
   return (
     <section className={`rounded-xl border p-4 backdrop-blur-sm ${frame}`}>
       <div className="flex items-start justify-between gap-3">
-        <h3 className="pt-1 text-xs uppercase tracking-wider text-accent-400">{label}</h3>
+        <h3 className="min-w-0 pt-1 text-xs uppercase tracking-wider text-accent-400">{label}</h3>
         <SectionShare section={section} text={text} path={path} card={card} />
       </div>
       <div className="mt-3">{children}</div>

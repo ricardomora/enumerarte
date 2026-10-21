@@ -50,7 +50,7 @@ export async function POST(request: Request) {
   const apiKey = process.env.POSTHOG_KEY;
   if (apiKey) {
     try {
-      await fetch(`${POSTHOG_HOST}/capture/`, {
+      const response = await fetch(`${POSTHOG_HOST}/capture/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -60,6 +60,9 @@ export async function POST(request: Request) {
           properties,
         }),
       });
+      if (!response.ok) {
+        console.error("PostHog rechazó el evento", response.status);
+      }
     } catch (error) {
       console.error("No se pudo reenviar el evento a PostHog", error);
     }

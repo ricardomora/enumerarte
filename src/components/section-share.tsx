@@ -30,8 +30,11 @@ export function SectionShare({ text, section, path, card }: SectionShareProps) {
 
   const url = `${origin || "https://enumerarte.com"}${path ?? ""}`;
   const caption = card ? shareCaption(card, url) : text;
+  const mapKey = card?.map
+    ? `${card.map.top.value}|${card.map.bottom.map((node) => node.value).join(",")}`
+    : "";
   const cardKey = card
-    ? `${card.kicker}|${card.message}|${card.detail ?? ""}|${card.left.value}|${card.left.label}|${card.right?.value ?? ""}|${card.right?.label ?? ""}`
+    ? `${card.kicker}|${card.message}|${card.detail ?? ""}|${card.left.value}|${card.left.label}|${card.right?.value ?? ""}|${card.right?.label ?? ""}|${mapKey}`
     : "";
   const cardRef = useRef(card);
   cardRef.current = card;
@@ -107,9 +110,10 @@ export function SectionShare({ text, section, path, card }: SectionShareProps) {
         aria-label={open ? "Cerrar vista para compartir" : "Compartir"}
         aria-expanded={open}
         onClick={() => setOpen(true)}
-        className="grid size-8 place-items-center rounded-lg border border-ink-600 bg-ink-900/70 text-mist-100 transition hover:border-accent-500/50 hover:bg-accent-500/10"
+        className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-ink-600 bg-ink-900/70 px-2 py-1.5 text-[11px] leading-none text-mist-100 transition hover:border-accent-500/50 hover:bg-accent-500/10"
       >
         <ShareIcon />
+        compartir
       </button>
 
       {open && card

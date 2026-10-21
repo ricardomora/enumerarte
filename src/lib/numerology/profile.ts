@@ -9,7 +9,15 @@
  */
 
 import { computeNameNumbers, type NameNumbers, type YPolicy } from "./letters";
-import { type Digit, digitSum, type NumerologyValue, reduce, reduceToDigit } from "./reduce";
+import {
+  type Digit,
+  digitSum,
+  isMasterNumber,
+  type MasterNumber,
+  type NumerologyValue,
+  reduce,
+  reduceToDigit,
+} from "./reduce";
 
 export interface CalendarDate {
   day: number;
@@ -74,19 +82,41 @@ function assertValidDate(date: CalendarDate): void {
   }
 }
 
+function missionTotal(date: CalendarDate): number {
+  assertValidDate(date);
+  return digitSum(date.day) + digitSum(date.month) + digitSum(date.year);
+}
+
 /**
- * Camino de vida: suma de todos los dígitos de la fecha completa, reducida con
- * preservación de maestros.
+ * Maestro por el que pasa la suma de la fecha, si lo hay.
  *
- * Existe una convención alternativa que reduce día, mes y año por separado
- * antes de sumar. Las dos coinciden en la gran mayoría de los casos pero no
- * siempre. Elegimos la suma directa por ser la más extendida y la más simple de
- * explicar al usuario, que es lo que importa dado que el producto se apoya en
- * mostrar el cálculo.
+ * 31/08/1992 suma 33 antes de llegar a 6. 15/04/1990 suma 29 y pasa por 11
+ * antes de llegar a 2. El 33 o el 11 no reemplazan el camino de vida: son un
+ * dato aparte.
+ */
+export function missionMaster(date: CalendarDate): MasterNumber | null {
+  let current = missionTotal(date);
+  while (current > 9) {
+    if (isMasterNumber(current)) return current;
+    current = digitSum(current);
+  }
+  return null;
+}
+
+/**
+ * Camino de vida: suma de los dígitos de la fecha, llevada a un solo dígito.
+ *
+ * Parte de la tradición se detiene en 11, 22 o 33. Aquí el número de la
+ * lectura es el dígito raíz, porque es el que coincide con la reducción
+ * completa. Si en el camino hubo un maestro, `missionMaster` lo devuelve para
+ * mostrarlo aparte, sin cambiar el camino ni los pares.
+ *
+ * La suma es directa (día + mes + año ya sumados en dígitos), no la variante
+ * que reduce cada componente a un dígito antes de juntarlos. En 31/08/1992
+ * las dos llegan a 6; el 33 solo se ve en la suma directa.
  */
 export function computeMision(date: CalendarDate): NumerologyValue {
-  assertValidDate(date);
-  return reduce(digitSum(date.day) + digitSum(date.month) + digitSum(date.year));
+  return reduceToDigit(missionTotal(date));
 }
 
 /**

@@ -57,7 +57,12 @@ describe("explainMision", () => {
       ],
     );
     assert.equal(explanation.initialTotal, 29);
-    assert.equal(explanation.result, 11);
+    assert.equal(explanation.result, 2);
+    assert.equal(explanation.master, 11);
+    assert.deepEqual(explanation.steps, [
+      { expression: "2 + 9", result: 11, stoppedAtMaster: false },
+      { expression: "1 + 1", result: 2, stoppedAtMaster: false },
+    ]);
   });
 
   test("el resultado explicado siempre coincide con computeMision", () => {
@@ -77,10 +82,13 @@ describe("explainMision", () => {
     }
   });
 
-  test("una fecha que ya suma un maestro no genera pasos de reducción", () => {
+  test("una fecha que suma un maestro sigue hasta el dígito raíz", () => {
     const explanation = explainMision({ day: 9, month: 9, year: 2002 }, LABELS);
     assert.equal(explanation.initialTotal, 22);
-    assert.deepEqual(explanation.steps, []);
-    assert.equal(explanation.result, 22);
+    assert.equal(explanation.master, 22);
+    assert.deepEqual(explanation.steps, [
+      { expression: "2 + 2", result: 4, stoppedAtMaster: false },
+    ]);
+    assert.equal(explanation.result, 4);
   });
 });
