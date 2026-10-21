@@ -1,11 +1,13 @@
 "use client";
 
 import { useId, useState } from "react";
-import { CONTACT_EMAIL, contactCopy, WHATSAPP_DISPLAY } from "@/content/contact";
+import { useUi } from "@/components/locale-provider";
+import { CONTACT_EMAIL, WHATSAPP_DISPLAY } from "@/content/contact";
 import { mailTo, whatsAppLink } from "@/lib/contact";
 import { track } from "@/lib/track";
 
 export function ContactSection() {
+  const ui = useUi();
   const messageId = useId();
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -15,24 +17,24 @@ export function ContactSection() {
     formEvent.preventDefault();
     const comment = message.trim();
     if (comment.length < 2) {
-      setError(contactCopy.feedbackEmpty);
+      setError(ui.feedbackEmpty);
       setOpened(false);
       return;
     }
     setError(null);
     setOpened(true);
     track("contact_clicked", { channel: "comentario" });
-    window.location.href = mailTo(contactCopy.feedbackSubject, comment);
+    window.location.href = mailTo(ui.feedbackSubject, comment);
   }
 
   return (
     <section aria-labelledby="contact-title" className="mt-10 space-y-6">
       <div className="space-y-3 text-center">
         <h2 id="contact-title" className="text-lg font-medium text-mist-100">
-          {contactCopy.title}
+          {ui.contactTitle}
         </h2>
         <p className="mx-auto max-w-md text-pretty text-sm leading-relaxed text-mist-300">
-          {contactCopy.body}
+          {ui.contactBody}
         </p>
         <a
           href={mailTo("Hola desde Enumerarte")}
@@ -44,7 +46,7 @@ export function ContactSection() {
       </div>
 
       <div className="flex flex-wrap justify-center gap-2">
-        {contactCopy.reasons.map((reason) => (
+        {ui.contactReasons.map((reason) => (
           <a
             key={reason.id}
             href={mailTo(reason.subject)}
@@ -62,17 +64,17 @@ export function ContactSection() {
         noValidate
       >
         <div className="space-y-1">
-          <h3 className="text-sm font-medium text-mist-100">{contactCopy.feedbackTitle}</h3>
-          <p className="text-sm text-mist-500">{contactCopy.feedbackHint}</p>
+          <h3 className="text-sm font-medium text-mist-100">{ui.feedbackTitle}</h3>
+          <p className="text-sm text-mist-500">{ui.feedbackHint}</p>
         </div>
         <label htmlFor={messageId} className="sr-only">
-          {contactCopy.feedbackTitle}
+          {ui.feedbackTitle}
         </label>
         <textarea
           id={messageId}
           value={message}
           onChange={(inputEvent) => setMessage(inputEvent.target.value)}
-          placeholder={contactCopy.feedbackPlaceholder}
+          placeholder={ui.feedbackPlaceholder}
           rows={4}
           className="w-full resize-y rounded-xl border border-ink-700 bg-ink-900 px-4 py-3 text-sm text-mist-100 outline-none transition placeholder:text-ink-600 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/25"
         />
@@ -85,16 +87,16 @@ export function ContactSection() {
           type="submit"
           className="w-full rounded-xl border border-[#f5a524]/50 bg-[#f5a524]/15 px-5 py-3 text-sm font-medium text-[#f8d48a] transition hover:bg-[#f5a524]/25"
         >
-          {contactCopy.feedbackSubmit}
+          {ui.feedbackSubmit}
         </button>
         <p className="text-xs leading-relaxed text-mist-500">
-          {opened ? contactCopy.feedbackOpened : contactCopy.feedbackNote}
+          {opened ? ui.feedbackOpened : ui.feedbackNote}
         </p>
       </form>
 
       <div className="space-y-3 rounded-2xl border border-ink-700 bg-ink-900/40 p-5 text-center">
-        <h3 className="text-sm font-medium text-mist-100">{contactCopy.whatsappTitle}</h3>
-        <p className="text-sm text-mist-500">{contactCopy.whatsappBody}</p>
+        <h3 className="text-sm font-medium text-mist-100">{ui.whatsappTitle}</h3>
+        <p className="text-sm text-mist-500">{ui.whatsappBody}</p>
         <a
           href={whatsAppLink("Hola, escribo desde Enumerarte.")}
           target="_blank"
@@ -111,7 +113,7 @@ export function ContactSection() {
           onClick={() => track("contact_clicked", { channel: "whatsapp" })}
           className="block w-full rounded-xl border border-[#f5a524]/50 bg-[#f5a524]/15 px-5 py-3 text-sm font-medium text-[#f8d48a] transition hover:bg-[#f5a524]/25"
         >
-          {contactCopy.whatsappAction}
+          {ui.whatsappAction}
         </a>
       </div>
     </section>

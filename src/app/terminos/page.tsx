@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function TermsPage() {
-  return <LegalDocument title={termsOfUse.title} sections={termsOfUse.sections} />;
+  return <LegalDocument kind="terms" />;
 }

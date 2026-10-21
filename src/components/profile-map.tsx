@@ -4,9 +4,10 @@ import { useRef, useState } from "react";
 import { AspectStory } from "@/components/aspect-story";
 import { CalculationPanel } from "@/components/calculation-panel";
 import { CosmicMap } from "@/components/cosmic-map";
+import { useLocale, useUi } from "@/components/locale-provider";
 import { MasterAside } from "@/components/master-aside";
 import { NameCalculationPanel } from "@/components/name-calculation-panel";
-import { LAYER_COPY, LAYER_TONE, layerTitle, type ProfileLayer } from "@/components/profile-layers";
+import { LAYER_TONE, type ProfileLayer } from "@/components/profile-layers";
 import { getDestiny, getMission, getShield, getSoul } from "@/content";
 import {
   type CalendarDate,
@@ -27,24 +28,27 @@ function TensionNote({
   nucleo,
   other,
   otherLabel,
+  tension,
 }: {
   nucleo: NumerologyValue;
   other: NumerologyValue;
   otherLabel: string;
+  tension: (life: number, label: string, other: number) => string;
 }) {
   if (nucleo === other) return null;
   return (
     <p className="rounded-xl border border-glow-400/30 bg-glow-400/8 p-4 text-center text-sm text-mist-300">
-      Tu Camino de Vida vibra en {nucleo} y tu {otherLabel} en {other}. Dos señales distintas — ahí
-      está la tensión entre lo que sientes por dentro y lo que proyectas.
+      {tension(nucleo, otherLabel, other)}
     </p>
   );
 }
 
 export function ProfileMap({ name, birthDate, mision, nameNumbers }: ProfileMapProps) {
+  const { locale } = useLocale();
+  const ui = useUi();
   const [layer, setLayer] = useState<ProfileLayer>("nucleo");
   const readingRef = useRef<HTMLDivElement>(null);
-  const label = layerTitle(layer);
+  const label = ui.layers[layer].title;
   const nameLocked = layer !== "nucleo" && !nameNumbers;
 
   function selectLayer(next: ProfileLayer) {
@@ -70,8 +74,7 @@ export function ProfileMap({ name, birthDate, mision, nameNumbers }: ProfileMapP
         {nameLocked ? (
           <div className="space-y-4">
             <p className="rounded-xl border border-ink-700 bg-ink-900/60 p-4 text-center text-sm text-mist-300">
-              Tu {label.toLowerCase()} se revela con nombre completo — nombre y apellidos, como en
-              tu acta.
+              {ui.nameLocked(label)}
             </p>
             {map}
           </div>
@@ -79,13 +82,13 @@ export function ProfileMap({ name, birthDate, mision, nameNumbers }: ProfileMapP
 
         {layer === "nucleo" ? (
           <AspectStory
-            reading={getMission(mision)}
-            layerLabel={LAYER_COPY.nucleo.title}
-            layerSubtitle={LAYER_COPY.nucleo.subtitle}
+            reading={getMission(mision, locale)}
+            layerLabel={ui.layers.nucleo.title}
+            layerSubtitle={ui.layers.nucleo.subtitle}
             name={name}
             tone={LAYER_TONE.nucleo}
           >
-            <CalculationPanel birthDate={birthDate} subject={LAYER_COPY.nucleo.title} />
+            <CalculationPanel birthDate={birthDate} subject={ui.layers.nucleo.title} />
             {map}
             {master ? <MasterAside master={master} root={mision} /> : null}
           </AspectStory>
@@ -93,13 +96,18 @@ export function ProfileMap({ name, birthDate, mision, nameNumbers }: ProfileMapP
 
         {layer === "escudo" && nameNumbers ? (
           <AspectStory
-            reading={getShield(nameNumbers.escudo)}
-            layerLabel={LAYER_COPY.escudo.title}
-            layerSubtitle={LAYER_COPY.escudo.subtitle}
+            reading={getShield(nameNumbers.escudo, locale)}
+            layerLabel={ui.layers.escudo.title}
+            layerSubtitle={ui.layers.escudo.subtitle}
             name={name}
             tone={LAYER_TONE.escudo}
             afterHeader={
-              <TensionNote nucleo={mision} other={nameNumbers.escudo} otherLabel="Personalidad" />
+              <TensionNote
+                nucleo={mision}
+                other={nameNumbers.escudo}
+                otherLabel={ui.layers.escudo.title}
+                tension={ui.tension}
+              />
             }
           >
             <NameCalculationPanel nameNumbers={nameNumbers} kind="escudo" />
@@ -109,12 +117,19 @@ export function ProfileMap({ name, birthDate, mision, nameNumbers }: ProfileMapP
 
         {layer === "alma" && nameNumbers ? (
           <AspectStory
-            reading={getSoul(nameNumbers.alma)}
-            layerLabel={LAYER_COPY.alma.title}
-            layerSubtitle={LAYER_COPY.alma.subtitle}
+            reading={getSoul(nameNumbers.alma, locale)}
+            layerLabel={ui.layers.alma.title}
+            layerSubtitle={ui.layers.alma.subtitle}
             name={name}
             tone={LAYER_TONE.alma}
-            afterHeader={<TensionNote nucleo={mision} other={nameNumbers.alma} otherLabel="Alma" />}
+            afterHeader={
+              <TensionNote
+                nucleo={mision}
+                other={nameNumbers.alma}
+                otherLabel={ui.layers.alma.title}
+                tension={ui.tension}
+              />
+            }
           >
             <NameCalculationPanel nameNumbers={nameNumbers} kind="alma" />
             {map}
@@ -123,9 +138,9 @@ export function ProfileMap({ name, birthDate, mision, nameNumbers }: ProfileMapP
 
         {layer === "destino" && nameNumbers ? (
           <AspectStory
-            reading={getDestiny(nameNumbers.destino)}
-            layerLabel={LAYER_COPY.destino.title}
-            layerSubtitle={LAYER_COPY.destino.subtitle}
+            reading={getDestiny(nameNumbers.destino, locale)}
+            layerLabel={ui.layers.destino.title}
+            layerSubtitle={ui.layers.destino.subtitle}
             name={name}
             tone={LAYER_TONE.destino}
           >

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useUi } from "@/components/locale-provider";
 import { renderShareCard } from "@/lib/render-share-card";
 import { type ShareCardData, shareCaption } from "@/lib/share";
 import { track } from "@/lib/track";
@@ -17,6 +18,7 @@ interface SectionShareProps {
 }
 
 export function SectionShare({ text, section, path, card }: SectionShareProps) {
+  const ui = useUi();
   const [open, setOpen] = useState(false);
   const [origin, setOrigin] = useState("");
   const [preview, setPreview] = useState("");
@@ -56,14 +58,14 @@ export function SectionShare({ text, section, path, card }: SectionShareProps) {
         setPreview(objectUrl);
       })
       .catch(() => {
-        if (!cancelled) setStatus("No se pudo preparar la imagen.");
+        if (!cancelled) setStatus(ui.shareFailed);
       });
 
     return () => {
       cancelled = true;
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [open, cardKey]);
+  }, [open, cardKey, ui.shareFailed]);
 
   async function handleSend() {
     if (!blob) return;
@@ -74,7 +76,7 @@ export function SectionShare({ text, section, path, card }: SectionShareProps) {
     try {
       if (navigator.canShare?.(payload)) {
         await navigator.share(payload);
-        setStatus("Imagen lista. Desde ahí eliges WhatsApp, historia o TikTok.");
+        setStatus(ui.shareReady);
         return;
       }
     } catch (error) {
@@ -82,14 +84,14 @@ export function SectionShare({ text, section, path, card }: SectionShareProps) {
     }
 
     downloadBlob(blob);
-    setStatus("Imagen guardada. Ábrela en WhatsApp, Instagram o TikTok.");
+    setStatus(ui.shareSavedApp);
   }
 
   function handleSave() {
     if (!blob) return;
     track("share_clicked", { channel: "descarga", section });
     downloadBlob(blob);
-    setStatus("Imagen guardada en tu dispositivo.");
+    setStatus(ui.shareSavedDevice);
   }
 
   async function handleCopy() {
@@ -107,13 +109,13 @@ export function SectionShare({ text, section, path, card }: SectionShareProps) {
     <>
       <button
         type="button"
-        aria-label={open ? "Cerrar vista para compartir" : "Compartir"}
+        aria-label={open ? ui.closeShare : ui.share}
         aria-expanded={open}
         onClick={() => setOpen(true)}
         className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-ink-600 bg-ink-900/70 px-2 py-1.5 text-[11px] leading-none text-mist-100 transition hover:border-accent-500/50 hover:bg-accent-500/10"
       >
-        <ShareIcon />
-        compartir
+        <ShareIcon title={ui.share} />
+        {ui.share}
       </button>
 
       {open && card
@@ -121,7 +123,7 @@ export function SectionShare({ text, section, path, card }: SectionShareProps) {
             <div className="fixed inset-0 z-50 grid place-items-center p-4">
               <button
                 type="button"
-                aria-label="Cerrar"
+                aria-label={ui.close}
                 className="absolute inset-0 bg-black/70"
                 onClick={() => setOpen(false)}
               />
@@ -133,15 +135,15 @@ export function SectionShare({ text, section, path, card }: SectionShareProps) {
               >
                 <div className="flex items-start justify-between gap-3">
                   <h2 id="share-card-title" className="text-sm font-medium text-mist-100">
-                    Así lo va a ver
+                    {ui.previewTitle}
                   </h2>
                   <button
                     type="button"
                     onClick={() => setOpen(false)}
                     className="grid size-8 place-items-center text-mist-300"
-                    aria-label="Cerrar"
+                    aria-label={ui.close}
                   >
-                    <CloseIcon />
+                    <CloseIcon title={ui.close} />
                   </button>
                 </div>
 
@@ -154,15 +156,12 @@ export function SectionShare({ text, section, path, card }: SectionShareProps) {
                       style={{ backgroundImage: `url("${preview}")` }}
                     />
                   ) : (
-                    <p className="px-4 py-16 text-center text-sm text-mist-500">
-                      Preparando la imagen…
-                    </p>
+                    <p className="px-4 py-16 text-center text-sm text-mist-500">{ui.preparing}</p>
                   )}
                 </div>
 
                 <p className="mt-3 text-center text-xs leading-relaxed text-mist-500">
-                  Se envía la imagen, con los números y el mensaje. El enlace para abrirla va en el
-                  texto cuando el sitio está publicado.
+                  {ui.shareNote}
                 </p>
 
                 <div className="mt-4 space-y-2">
@@ -172,7 +171,7 @@ export function SectionShare({ text, section, path, card }: SectionShareProps) {
                     disabled={!blob}
                     className="w-full rounded-xl bg-[#f5a524] px-4 py-3 text-sm font-medium text-[#1a1206] transition hover:bg-[#f8d48a] disabled:opacity-50"
                   >
-                    Enviar imagen
+                    {ui.sendImage}
                   </button>
                   <button
                     type="button"
@@ -180,14 +179,14 @@ export function SectionShare({ text, section, path, card }: SectionShareProps) {
                     disabled={!blob}
                     className="w-full rounded-xl border border-ink-600 px-4 py-3 text-sm text-mist-100 transition hover:border-ink-500 disabled:opacity-50"
                   >
-                    Guardar imagen
+                    {ui.saveImage}
                   </button>
                   <button
                     type="button"
                     onClick={handleCopy}
                     className="w-full py-2 text-sm text-mist-500 transition hover:text-mist-300"
                   >
-                    {copied ? "Copiado" : "Copiar texto"}
+                    {copied ? ui.copied : ui.copyText}
                   </button>
                 </div>
 
@@ -210,10 +209,10 @@ function downloadBlob(blob: Blob) {
   URL.revokeObjectURL(objectUrl);
 }
 
-function ShareIcon() {
+function ShareIcon({ title }: { title: string }) {
   return (
     <svg aria-hidden viewBox="0 0 20 20" className="size-4" fill="none">
-      <title>Compartir</title>
+      <title>{title}</title>
       <path d="M10 3.5v8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       <path
         d="M6.5 6.5 10 3l3.5 3.5"
@@ -233,10 +232,10 @@ function ShareIcon() {
   );
 }
 
-function CloseIcon() {
+function CloseIcon({ title }: { title: string }) {
   return (
     <svg aria-hidden viewBox="0 0 20 20" className="size-4" fill="none">
-      <title>Cerrar</title>
+      <title>{title}</title>
       <path d="m6 6 8 8M14 6l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );

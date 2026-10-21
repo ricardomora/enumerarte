@@ -8,7 +8,7 @@ export default function Home() {
       <Starfield />
       <ReadingFlow />
 
-      <SiteFooter note="Un espejo para entenderte y conectar — tú decides qué hacer con lo que descubras." />
+      <SiteFooter note="home" />
     </main>
   );
 }

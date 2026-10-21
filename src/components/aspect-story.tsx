@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useUi } from "@/components/locale-provider";
 import { NumberGlyph } from "@/components/number-glyph";
 import type { LayerTone } from "@/components/profile-layers";
 import { SectionShare } from "@/components/section-share";
@@ -20,26 +21,29 @@ interface AspectStoryProps {
 }
 
 function shareText(
+  someone: string,
   name: string,
   layerLabel: string,
   value: NumerologyValue,
   heading: string,
   body: string,
 ): string {
-  const who = name.trim().split(/\s+/)[0] || "Alguien";
+  const who = name.trim().split(/\s+/)[0] || someone;
   return `${who} · ${layerLabel} ${value}\n${heading}\n${body}`;
 }
 
 function numberCard(
+  someone: string,
+  sharesLayer: (who: string, layer: string) => string,
   name: string,
   layerLabel: string,
   value: NumerologyValue,
   heading: string,
   body: string,
 ): ShareCardData {
-  const who = name.trim().split(/\s+/)[0] || "Alguien";
+  const who = name.trim().split(/\s+/)[0] || someone;
   return {
-    kicker: `${who} te comparte su ${layerLabel}`,
+    kicker: sharesLayer(who, layerLabel),
     message: heading,
     detail: body,
     left: { value, label: layerLabel },
@@ -55,7 +59,12 @@ export function AspectStory({
   afterHeader,
   children,
 }: AspectStoryProps) {
+  const ui = useUi();
   const [moreOpen, setMoreOpen] = useState(false);
+  const text = (heading: string, body: string) =>
+    shareText(ui.someone, name, layerLabel, reading.value, heading, body);
+  const card = (heading: string, body: string) =>
+    numberCard(ui.someone, ui.sharesLayer, name, layerLabel, reading.value, heading, body);
 
   return (
     <article key={tone.hex} className="animate-rise space-y-8">
@@ -78,9 +87,9 @@ export function AspectStory({
       {afterHeader}
 
       <ReadingBlock
-        label="Cómo te mueves"
-        share={shareText(name, layerLabel, reading.value, "Cómo te mueves", reading.body)}
-        card={numberCard(name, layerLabel, reading.value, "Cómo te mueves", reading.body)}
+        label={ui.howYouMove}
+        share={text(ui.howYouMove, reading.body)}
+        card={card(ui.howYouMove, reading.body)}
         section={`${layerLabel}:cuerpo`}
         accent={tone.hex}
       >
@@ -89,21 +98,9 @@ export function AspectStory({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <ReadingBlock
-          label="Lo que aportas"
-          share={shareText(
-            name,
-            layerLabel,
-            reading.value,
-            "Lo que aportas",
-            reading.strengths.join("\n"),
-          )}
-          card={numberCard(
-            name,
-            layerLabel,
-            reading.value,
-            "Lo que aportas",
-            reading.strengths.join("\n"),
-          )}
+          label={ui.whatYouBring}
+          share={text(ui.whatYouBring, reading.strengths.join("\n"))}
+          card={card(ui.whatYouBring, reading.strengths.join("\n"))}
           section={`${layerLabel}:fortalezas`}
           accent={tone.hex}
         >
@@ -116,21 +113,9 @@ export function AspectStory({
           </div>
         </ReadingBlock>
         <ReadingBlock
-          label="Dónde crecer"
-          share={shareText(
-            name,
-            layerLabel,
-            reading.value,
-            "Dónde crecer",
-            reading.frictions.join("\n"),
-          )}
-          card={numberCard(
-            name,
-            layerLabel,
-            reading.value,
-            "Dónde crecer",
-            reading.frictions.join("\n"),
-          )}
+          label={ui.whereYouGrow}
+          share={text(ui.whereYouGrow, reading.frictions.join("\n"))}
+          card={card(ui.whereYouGrow, reading.frictions.join("\n"))}
           section={`${layerLabel}:fricciones`}
           accent={tone.hex}
         >
@@ -151,28 +136,14 @@ export function AspectStory({
           onClick={() => setMoreOpen((open) => !open)}
           className="w-full rounded-xl border border-ink-700 bg-ink-900/50 px-4 py-3 text-left text-sm leading-relaxed text-mist-100 transition hover:border-[#f5a524]/50 hover:text-[#f8d48a]"
         >
-          {moreOpen
-            ? "Ocultar bajo presión, vínculos, lo que otros ven y la señal de la semana"
-            : "Dale click aquí si quieres leer más sobre cómo eres bajo presión, en tus vínculos, cómo otros te ven y el consejo de la semana"}
+          {moreOpen ? ui.moreOpen : ui.moreClosed}
         </button>
         {moreOpen ? (
           <div className="space-y-3">
             <ReadingBlock
-              label="Bajo presión"
-              share={shareText(
-                name,
-                layerLabel,
-                reading.value,
-                "Bajo presión",
-                reading.underPressure,
-              )}
-              card={numberCard(
-                name,
-                layerLabel,
-                reading.value,
-                "Bajo presión",
-                reading.underPressure,
-              )}
+              label={ui.underPressure}
+              share={text(ui.underPressure, reading.underPressure)}
+              card={card(ui.underPressure, reading.underPressure)}
               section={`${layerLabel}:presion`}
               accent={tone.hex}
             >
@@ -181,21 +152,9 @@ export function AspectStory({
               </p>
             </ReadingBlock>
             <ReadingBlock
-              label="En tus vínculos"
-              share={shareText(
-                name,
-                layerLabel,
-                reading.value,
-                "En tus vínculos",
-                reading.inRelationships,
-              )}
-              card={numberCard(
-                name,
-                layerLabel,
-                reading.value,
-                "En tus vínculos",
-                reading.inRelationships,
-              )}
+              label={ui.inBonds}
+              share={text(ui.inBonds, reading.inRelationships)}
+              card={card(ui.inBonds, reading.inRelationships)}
               section={`${layerLabel}:vinculos`}
               accent={tone.hex}
             >
@@ -204,21 +163,9 @@ export function AspectStory({
               </p>
             </ReadingBlock>
             <ReadingBlock
-              label="Lo que otros ven"
-              share={shareText(
-                name,
-                layerLabel,
-                reading.value,
-                "Lo que otros ven",
-                reading.blindSpot,
-              )}
-              card={numberCard(
-                name,
-                layerLabel,
-                reading.value,
-                "Lo que otros ven",
-                reading.blindSpot,
-              )}
+              label={ui.whatOthersSee}
+              share={text(ui.whatOthersSee, reading.blindSpot)}
+              card={card(ui.whatOthersSee, reading.blindSpot)}
               section={`${layerLabel}:punto-ciego`}
               accent={tone.hex}
             >
@@ -227,21 +174,9 @@ export function AspectStory({
               </p>
             </ReadingBlock>
             <ReadingBlock
-              label="Señal para esta semana"
-              share={shareText(
-                name,
-                layerLabel,
-                reading.value,
-                "Señal para esta semana",
-                reading.microPractice,
-              )}
-              card={numberCard(
-                name,
-                layerLabel,
-                reading.value,
-                "Señal para esta semana",
-                reading.microPractice,
-              )}
+              label={ui.weekly}
+              share={text(ui.weekly, reading.microPractice)}
+              card={card(ui.weekly, reading.microPractice)}
               section={`${layerLabel}:practica`}
               accent={tone.hex}
             >

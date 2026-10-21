@@ -1,24 +1,10 @@
 "use client";
 
+import { useUi } from "@/components/locale-provider";
 import { explainReduction, type LetterBreakdown, type NameNumbers } from "@/lib/numerology";
 import { track } from "@/lib/track";
 
 type NameLayer = "alma" | "escudo" | "destino";
-
-const COPY: Record<NameLayer, { subject: string; rule: string }> = {
-  alma: {
-    subject: "Alma",
-    rule: "Suma de las vocales del nombre completo, reducida.",
-  },
-  escudo: {
-    subject: "Personalidad",
-    rule: "Suma de las consonantes del nombre completo, reducida. Es la imagen que proyectas.",
-  },
-  destino: {
-    subject: "Expresión",
-    rule: "Suma de todas las letras del nombre completo, reducida.",
-  },
-};
 
 function totalOf(entries: LetterBreakdown[]): number {
   return entries.reduce((sum, entry) => sum + entry.value, 0);
@@ -52,7 +38,12 @@ export function NameCalculationPanel({
   nameNumbers: NameNumbers;
   kind: NameLayer;
 }) {
-  const copy = COPY[kind];
+  const ui = useUi();
+  const copy = {
+    alma: { subject: ui.layers.alma.title, rule: ui.soulRule },
+    escudo: { subject: ui.layers.escudo.title, rule: ui.shieldRule },
+    destino: { subject: ui.layers.destino.title, rule: ui.destinyRule },
+  }[kind];
   const { entries, usedAllLetters } = selection(nameNumbers, kind);
   const total = totalOf(entries);
   const steps = explainReduction(total);
@@ -67,22 +58,20 @@ export function NameCalculationPanel({
       }}
     >
       <summary className="cursor-pointer list-none text-sm text-mist-500 transition hover:text-mist-300">
-        <span className="group-open:hidden">Ver cómo se calcula tu {copy.subject}</span>
-        <span className="hidden group-open:inline">Ocultar el cálculo</span>
+        <span className="group-open:hidden">{ui.calcShow(copy.subject)}</span>
+        <span className="hidden group-open:inline">{ui.calcHide}</span>
       </summary>
 
       <div className="mt-4 space-y-4">
         <p className="text-sm leading-relaxed text-mist-300">{copy.rule}</p>
         {usedAllLetters ? (
-          <p className="text-xs leading-relaxed text-mist-500">
-            Este nombre no separa vocales y consonantes, así que la cuenta usa todas las letras.
-          </p>
+          <p className="text-xs leading-relaxed text-mist-500">{ui.allLetters}</p>
         ) : null}
 
         {kind === "destino" ? (
           <div className="space-y-2 text-sm">
-            <GroupLine label="Vocales" entries={vowels} />
-            <GroupLine label="Consonantes" entries={consonants} />
+            <GroupLine label={ui.vowels} entries={vowels} />
+            <GroupLine label={ui.consonants} entries={consonants} />
           </div>
         ) : (
           <LetterRow entries={entries} />
@@ -90,7 +79,7 @@ export function NameCalculationPanel({
 
         <div className="space-y-2 border-t border-ink-700 pt-3 font-mono text-sm">
           <div>
-            <span className="text-mist-500">Suma</span>
+            <span className="text-mist-500">{ui.sum}</span>
             <p className="mt-1 text-pretty break-words text-mist-100">
               {entries.map((entry) => entry.value).join(" + ")} = {total}
             </p>
@@ -100,7 +89,7 @@ export function NameCalculationPanel({
               <span className="text-mist-500">{step.expression}</span>
               <span className={step.stoppedAtMaster ? "text-glow-300" : "text-mist-300"}>
                 {step.result}
-                {step.stoppedAtMaster ? " · maestro, no se reduce más" : ""}
+                {step.stoppedAtMaster ? ui.masterStop : ""}
               </span>
             </div>
           ))}

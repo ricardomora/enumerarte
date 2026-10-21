@@ -1,5 +1,8 @@
+"use client";
+
+import { useLocale, useUi } from "@/components/locale-provider";
 import { SectionShare } from "@/components/section-share";
-import { BOND_FRAME, getPair } from "@/content";
+import { bondFrame, getPair } from "@/content";
 import type { NumerologyValue, RelationshipType } from "@/lib/numerology";
 import type { ShareCardData } from "@/lib/share";
 
@@ -18,12 +21,14 @@ export function PairCard({
   sharePath: string;
   children?: React.ReactNode;
 }) {
-  const pair = getPair(self.mision, other.mision);
-  const who = `${self.name} y ${other.name}`;
-  const frame = BOND_FRAME[relationship];
+  const { locale } = useLocale();
+  const ui = useUi();
+  const pair = getPair(self.mision, other.mision, locale);
+  const who = `${self.name} ${ui.and} ${other.name}`;
+  const frame = bondFrame(locale)[relationship];
   const bond = pair.bonds[relationship];
   const connection: ShareCardData = {
-    kicker: `${self.name} te comparte esta conexión con ${other.name}`,
+    kicker: ui.sharesConnection(self.name, other.name),
     message: pair.headline,
     detail: pair.body,
     left: { value: self.mision, label: self.name },
@@ -43,7 +48,7 @@ export function PairCard({
       </header>
 
       <PairSection
-        label="Qué pasa entre ustedes"
+        label={ui.betweenYou}
         text={`${who}\n${pair.headline}\n${pair.body}`}
         section="par:cuerpo"
         path={sharePath}
@@ -68,14 +73,14 @@ export function PairCard({
       </PairSection>
 
       <PairSection
-        label="Señal para esta semana"
-        text={`${who}\nSeñal para esta semana\n${pair.practice}`}
+        label={ui.weekly}
+        text={`${who}\n${ui.weekly}\n${pair.practice}`}
         section="par:practica"
         path={sharePath}
         tone="accent"
         card={{
           ...connection,
-          message: "Señal para esta semana",
+          message: ui.weekly,
           detail: pair.practice,
         }}
       >

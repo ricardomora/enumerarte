@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import { useUi } from "@/components/locale-provider";
 import { isFutureDate, todayCalendarDate } from "@/lib/date-input";
 import { type CalendarDate, isValidDate } from "@/lib/numerology";
 import { track } from "@/lib/track";
@@ -21,21 +22,6 @@ interface PersonFormProps {
   onSubmit: (person: PersonInput) => void;
 }
 
-const MONTHS = [
-  "Enero",
-  "Febrero",
-  "Marzo",
-  "Abril",
-  "Mayo",
-  "Junio",
-  "Julio",
-  "Agosto",
-  "Septiembre",
-  "Octubre",
-  "Noviembre",
-  "Diciembre",
-] as const;
-
 const FIRST_YEAR = 1900;
 
 const fieldClass =
@@ -51,6 +37,7 @@ export function PersonForm({
   initial,
   onSubmit,
 }: PersonFormProps) {
+  const ui = useUi();
   const dayId = useId();
   const monthId = useId();
   const yearId = useId();
@@ -76,31 +63,31 @@ export function PersonForm({
     formEvent.preventDefault();
 
     if (!day || !month || !year) {
-      reject("missing_date", "Elige día, mes y año.");
+      reject("missing_date", ui.missingDate);
       return;
     }
 
     const birthDate = { day: Number(day), month: Number(month), year: Number(year) };
     if (!isValidDate(birthDate)) {
-      reject("invalid_date", "Revisa la fecha: no parece un día real.");
+      reject("invalid_date", ui.invalidDate);
       return;
     }
 
     if (isFutureDate(birthDate)) {
-      reject("future_date", "Esa fecha está en el futuro.");
+      reject("future_date", ui.futureDate);
       return;
     }
 
     const trimmed = name.trim();
     if (trimmed.length < 2) {
-      reject("short_name", "Escribe al menos un nombre.");
+      reject("short_name", ui.shortName);
       return;
     }
 
     if (requireFullName) {
       const parts = trimmed.split(/\s+/).filter((part) => part.length >= 2);
       if (parts.length < 2) {
-        reject("incomplete_name", "Escribe nombre y apellidos, como en tu documento.");
+        reject("incomplete_name", ui.incompleteName);
         return;
       }
     }
@@ -122,18 +109,16 @@ export function PersonForm({
       </div>
 
       <fieldset className="space-y-1.5">
-        <legend className="text-xs uppercase tracking-wider text-mist-500">
-          Fecha de nacimiento
-        </legend>
+        <legend className="text-xs uppercase tracking-wider text-mist-500">{ui.birthDate}</legend>
         <div className="grid grid-cols-3 gap-2">
           <select
             id={dayId}
-            aria-label="Día"
+            aria-label={ui.day}
             value={day}
             onChange={(event) => setDay(event.target.value)}
             className={fieldClass}
           >
-            <option value="">Día</option>
+            <option value="">{ui.day}</option>
             {Array.from({ length: 31 }, (_, index) => index + 1).map((value) => (
               <option key={value} value={value}>
                 {value}
@@ -142,13 +127,13 @@ export function PersonForm({
           </select>
           <select
             id={monthId}
-            aria-label="Mes"
+            aria-label={ui.month}
             value={month}
             onChange={(event) => setMonth(event.target.value)}
             className={fieldClass}
           >
-            <option value="">Mes</option>
-            {MONTHS.map((label, index) => (
+            <option value="">{ui.month}</option>
+            {ui.months.map((label, index) => (
               <option key={label} value={index + 1}>
                 {label}
               </option>
@@ -156,12 +141,12 @@ export function PersonForm({
           </select>
           <select
             id={yearId}
-            aria-label="Año"
+            aria-label={ui.year}
             value={year}
             onChange={(event) => setYear(event.target.value)}
             className={fieldClass}
           >
-            <option value="">Año</option>
+            <option value="">{ui.year}</option>
             {years.map((value) => (
               <option key={value} value={value}>
                 {value}

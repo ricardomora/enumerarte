@@ -1,15 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale, useUi } from "@/components/locale-provider";
 import { EnergyPulse, NodeOrb } from "@/components/node-orb";
-import {
-  LAYER_COPY,
-  LAYER_TONE,
-  NUMBERS_MAP_TITLE,
-  type ProfileLayer,
-} from "@/components/profile-layers";
+import { LAYER_TONE, type ProfileLayer } from "@/components/profile-layers";
 import { SectionShare } from "@/components/section-share";
 import { getMission } from "@/content";
+import type { Locale } from "@/content/types";
+import type { LayerCopy } from "@/content/ui";
 import type { NameNumbers, NumerologyValue } from "@/lib/numerology";
 import type { ShareCardData, ShareMapNode } from "@/lib/share";
 
@@ -57,6 +55,8 @@ const STARS = [
 ] as const;
 
 export function CosmicMap({ name, mision, nameNumbers, active, onSelect }: CosmicMapProps) {
+  const { locale } = useLocale();
+  const ui = useUi();
   const [bursts, setBursts] = useState<Partial<Record<ProfileLayer, number>>>({});
   const nodes: NodeSpec[] = [
     { id: "nucleo", x: 160, y: 108, value: mision, locked: false },
@@ -68,17 +68,35 @@ export function CosmicMap({ name, mision, nameNumbers, active, onSelect }: Cosmi
   const branches = nodes.slice(1);
 
   return (
-    <section aria-label="Relación entre tus números">
+    <section aria-label={ui.numbersMapTitle}>
       <div className="overflow-hidden rounded-2xl border border-ink-700 bg-[#07060f]">
         <div className="flex justify-end px-3 pt-3">
           <SectionShare
             section="mapa-de-numeros"
-            text={mapShareText(name, mision, nameNumbers)}
-            card={mapShareCard(name, mision, nameNumbers)}
+            text={mapShareText(
+              name,
+              mision,
+              nameNumbers,
+              locale,
+              ui.layers,
+              ui.someone,
+              ui.sharesMap,
+              ui.revealedWithName,
+            )}
+            card={mapShareCard(
+              name,
+              mision,
+              nameNumbers,
+              locale,
+              ui.layers,
+              ui.someone,
+              ui.sharesMap,
+              ui.revealedWithName,
+            )}
           />
         </div>
         <p className="px-4 text-center text-pretty text-base font-medium leading-snug text-mist-100">
-          {NUMBERS_MAP_TITLE}
+          {ui.numbersMapTitle}
         </p>
         <div className="relative">
           <svg
@@ -129,7 +147,7 @@ export function CosmicMap({ name, mision, nameNumbers, active, onSelect }: Cosmi
 
           <div
             role="tablist"
-            aria-label="Partes de tu mapa"
+            aria-label={ui.numbersMapTitle}
             className="relative"
             style={{ aspectRatio: `${VIEW.width} / ${VIEW.height}` }}
           >
@@ -152,8 +170,12 @@ export function CosmicMap({ name, mision, nameNumbers, active, onSelect }: Cosmi
   );
 }
 
-function mapNode(layer: ProfileLayer, value: NumerologyValue | null): ShareMapNode {
-  const copy = LAYER_COPY[layer];
+function mapNode(
+  layers: LayerCopy,
+  layer: ProfileLayer,
+  value: NumerologyValue | null,
+): ShareMapNode {
+  const copy = layers[layer];
   return {
     value: value === null ? "?" : String(value),
     label: copy.title,
@@ -162,9 +184,14 @@ function mapNode(layer: ProfileLayer, value: NumerologyValue | null): ShareMapNo
   };
 }
 
-function mapNumberLine(layer: ProfileLayer, value: NumerologyValue | null): string {
-  const copy = LAYER_COPY[layer];
-  if (value === null) return `${copy.title} · se revela con el nombre completo`;
+function mapNumberLine(
+  layers: LayerCopy,
+  revealedWithName: string,
+  layer: ProfileLayer,
+  value: NumerologyValue | null,
+): string {
+  const copy = layers[layer];
+  if (value === null) return `${copy.title} · ${revealedWithName}`;
   return `${copy.title} ${value} · ${copy.subtitle}`;
 }
 
@@ -172,27 +199,32 @@ function mapShareCard(
   name: string,
   mision: NumerologyValue,
   nameNumbers: NameNumbers | null,
+  locale: Locale,
+  layers: LayerCopy,
+  someone: string,
+  sharesMap: (who: string) => string,
+  revealedWithName: string,
 ): ShareCardData {
-  const who = name.trim().split(/\s+/)[0] || "Alguien";
-  const mission = getMission(mision);
+  const who = name.trim().split(/\s+/)[0] || someone;
+  const mission = getMission(mision, locale);
   return {
-    kicker: `${who} te comparte su mapa`,
+    kicker: sharesMap(who),
     message: mission.title,
     detail: [
-      mapNumberLine("nucleo", mision),
-      mapNumberLine("escudo", nameNumbers?.escudo ?? null),
-      mapNumberLine("alma", nameNumbers?.alma ?? null),
-      mapNumberLine("destino", nameNumbers?.destino ?? null),
+      mapNumberLine(layers, revealedWithName, "nucleo", mision),
+      mapNumberLine(layers, revealedWithName, "escudo", nameNumbers?.escudo ?? null),
+      mapNumberLine(layers, revealedWithName, "alma", nameNumbers?.alma ?? null),
+      mapNumberLine(layers, revealedWithName, "destino", nameNumbers?.destino ?? null),
       "",
       mission.essence,
     ].join("\n"),
-    left: { value: mision, label: LAYER_COPY.nucleo.title },
+    left: { value: mision, label: layers.nucleo.title },
     map: {
-      top: mapNode("nucleo", mision),
+      top: mapNode(layers, "nucleo", mision),
       bottom: [
-        mapNode("escudo", nameNumbers?.escudo ?? null),
-        mapNode("alma", nameNumbers?.alma ?? null),
-        mapNode("destino", nameNumbers?.destino ?? null),
+        mapNode(layers, "escudo", nameNumbers?.escudo ?? null),
+        mapNode(layers, "alma", nameNumbers?.alma ?? null),
+        mapNode(layers, "destino", nameNumbers?.destino ?? null),
       ],
     },
   };
@@ -202,8 +234,22 @@ function mapShareText(
   name: string,
   mision: NumerologyValue,
   nameNumbers: NameNumbers | null,
+  locale: Locale,
+  layers: LayerCopy,
+  someone: string,
+  sharesMap: (who: string) => string,
+  revealedWithName: string,
 ): string {
-  const card = mapShareCard(name, mision, nameNumbers);
+  const card = mapShareCard(
+    name,
+    mision,
+    nameNumbers,
+    locale,
+    layers,
+    someone,
+    sharesMap,
+    revealedWithName,
+  );
   return [card.kicker, card.message, card.detail]
     .filter((line) => line && line.length > 0)
     .join("\n");
@@ -220,7 +266,8 @@ function MapNode({
   burst: number;
   onSelect: (layer: ProfileLayer) => void;
 }) {
-  const copy = LAYER_COPY[node.id];
+  const ui = useUi();
+  const copy = ui.layers[node.id];
   const tone = LAYER_TONE[node.id];
 
   return (
@@ -228,7 +275,7 @@ function MapNode({
       type="button"
       role="tab"
       aria-selected={active}
-      aria-label={`${copy.title}, ${node.locked ? "bloqueado" : node.value}. ${copy.subtitle}`}
+      aria-label={`${copy.title}, ${node.locked ? ui.locked : node.value}. ${copy.subtitle}`}
       disabled={node.locked}
       onClick={() => onSelect(node.id)}
       className={`absolute -translate-x-1/2 -translate-y-1/2 transition duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:hover:scale-100 ${

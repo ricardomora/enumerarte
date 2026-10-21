@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useId, useState } from "react";
-import { contactCopy } from "@/content/contact";
+import { useUi } from "@/components/locale-provider";
 import { legalIdentity } from "@/content/legal";
 import { getVisitorId, trackOnce } from "@/lib/track";
 
 export function SubscribeForm() {
+  const ui = useUi();
   const inputId = useId();
   const consentId = useId();
   const [email, setEmail] = useState("");
@@ -43,9 +44,7 @@ export function SubscribeForm() {
   }
 
   if (status === "done") {
-    return (
-      <p className="pt-[60px] text-sm leading-relaxed text-mist-100">{contactCopy.subscribeDone}</p>
-    );
+    return <p className="pt-[60px] text-sm leading-relaxed text-mist-100">{ui.subscribeDone}</p>;
   }
 
   return (
@@ -56,7 +55,7 @@ export function SubscribeForm() {
     >
       <div className="flex w-full min-w-0 gap-2">
         <label htmlFor={inputId} className="sr-only">
-          {contactCopy.subscribeTitle}
+          {ui.subscribeTitle}
         </label>
         <input
           id={inputId}
@@ -64,7 +63,7 @@ export function SubscribeForm() {
           required
           value={email}
           onChange={(inputEvent) => setEmail(inputEvent.target.value)}
-          placeholder={contactCopy.subscribePlaceholder}
+          placeholder={ui.subscribePlaceholder}
           autoComplete="email"
           className="w-full min-w-0 flex-1 rounded-xl border border-ink-700 bg-ink-900 px-4 py-3 text-sm text-mist-100 outline-none transition placeholder:text-ink-600 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/25"
         />
@@ -73,7 +72,7 @@ export function SubscribeForm() {
           disabled={status === "sending"}
           className="shrink-0 rounded-xl bg-[#f5a524] px-5 py-3 text-sm font-medium text-[#1a1206] transition hover:bg-[#f8d48a] disabled:opacity-60"
         >
-          {status === "sending" ? contactCopy.subscribeSending : contactCopy.subscribeSubmit}
+          {status === "sending" ? ui.subscribeSending : ui.subscribeSubmit}
         </button>
       </div>
       <label
@@ -91,24 +90,24 @@ export function SubscribeForm() {
           className="mt-0.5 size-3.5 shrink-0 accent-[#f5a524]"
         />
         <span>
-          {contactCopy.subscribeConsentLead}{" "}
+          {ui.subscribeConsentLead}{" "}
           <Link
             href="/privacidad"
             className="text-mist-300 underline decoration-ink-600 underline-offset-2"
           >
-            {contactCopy.subscribeConsentLink}
+            {ui.subscribeConsentLink}
           </Link>
           .
         </span>
       </label>
       {status === "consent" ? (
         <p role="alert" className="text-sm text-glow-300">
-          {contactCopy.subscribeConsentMissing}
+          {ui.subscribeConsentMissing}
         </p>
       ) : null}
       {status === "error" ? (
         <p role="alert" className="text-sm text-glow-300">
-          {contactCopy.subscribeError}
+          {ui.subscribeError}
         </p>
       ) : null}
     </form>

@@ -2,19 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import {
-  LinkPersonForm,
-  type LinkPersonInput,
-  RELATION_LABELS,
-} from "@/components/link-person-form";
+import { LinkPersonForm, type LinkPersonInput } from "@/components/link-person-form";
+import { useLocale, useUi } from "@/components/locale-provider";
 import { PairCard } from "@/components/pair-card";
 import { PersonForm, type PersonInput } from "@/components/person-form";
 import { PriceGate } from "@/components/price-gate";
 import { ProfileMap } from "@/components/profile-map";
 import { RelationMap } from "@/components/relation-map";
 import { SubscribeForm } from "@/components/subscribe-form";
-import { exampleCopy } from "@/content/legal";
-import { premiumCopy } from "@/content/premium";
 import { formatDate } from "@/lib/date-input";
 import { FREE_LINK_LIMIT } from "@/lib/limits";
 import {
@@ -46,9 +41,9 @@ function resolvePerson(person: PersonInput): Person {
   };
 }
 
-function personLabel(person: LinkedPerson): string {
+function personLabel(person: LinkedPerson, relations: Record<RelationshipType, string>): string {
   const trimmed = person.name.trim();
-  return trimmed ? firstName(trimmed) : RELATION_LABELS[person.relationship];
+  return trimmed ? firstName(trimmed) : relations[person.relationship];
 }
 
 /** Solo el primer nombre: es como la gente se refiere a los suyos. */
@@ -57,6 +52,8 @@ function firstName(name: string): string {
 }
 
 export function ReadingFlow() {
+  const ui = useUi();
+  const { locale } = useLocale();
   const [step, setStep] = useState<Step>("self");
   const [self, setSelf] = useState<Person | null>(null);
   const [linked, setLinked] = useState<LinkedPerson[]>([]);
@@ -116,8 +113,8 @@ export function ReadingFlow() {
           onClick={goBack}
           className="mb-4 inline-flex w-fit items-center gap-1.5 text-sm text-mist-300 transition hover:text-mist-100"
         >
-          <ArrowLeft />
-          {step === "pair" ? "Volver a tu mapa" : "Volver al inicio"}
+          <ArrowLeft title={ui.back} />
+          {step === "pair" ? ui.backToMap : ui.backHome}
         </button>
       ) : null}
 
@@ -128,27 +125,28 @@ export function ReadingFlow() {
             aria-hidden
             className="absolute top-1/2 left-1/2 -z-10 h-16 w-[min(100%,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f5a524]/35 blur-3xl"
           />
-          Tu mapa. Tus vínculos. Tus señales.
+          {ui.homeTitle}
         </h1>
         {step === "self" || !self ? (
           <>
             <p className="mx-auto max-w-md text-pretty text-sm leading-relaxed text-mist-300 sm:text-base">
-              Descubre lo que dicen tus números sobre ti y sobre quienes te importan. Sin hora de
-              nacimiento. Sin registro y sin login.
+              {ui.homeLead}
             </p>
             <p>
               <Link
                 href="/ejemplo"
                 className="text-sm text-mist-100 underline decoration-ink-600 underline-offset-4"
               >
-                {exampleCopy.homeLink}
+                {ui.homeLink}
               </Link>
             </p>
           </>
         ) : (
           <div className="space-y-1">
             <p className="text-base text-mist-100">{self.name}</p>
-            <p className="text-sm text-mist-300">{formatDate(self.birthDate)}</p>
+            <p className="text-sm text-mist-300">
+              {formatDate(self.birthDate, locale === "en" ? "en" : "es")}
+            </p>
           </div>
         )}
       </header>
@@ -158,12 +156,12 @@ export function ReadingFlow() {
           <div className="p-5 sm:p-7">
             {step === "self" ? (
               <PersonForm
-                title="Descubre tu mapa"
-                hint="Primero tu fecha. Después tu nombre completo."
-                nameLabel="Nombre completo"
-                namePlaceholder="Nombre y apellidos"
+                title={ui.discoverTitle}
+                hint={ui.discoverHint}
+                nameLabel={ui.fullName}
+                namePlaceholder={ui.fullNamePlaceholder}
                 requireFullName
-                submitLabel="Revelar mi mapa"
+                submitLabel={ui.reveal}
                 initial={self ?? undefined}
                 onSubmit={handleSelf}
               />
@@ -182,18 +180,21 @@ export function ReadingFlow() {
               <div className="space-y-8">
                 <PairCard
                   self={{ name: firstName(self.name), mision: self.mision }}
-                  other={{ name: personLabel(activeOther), mision: activeOther.mision }}
+                  other={{
+                    name: personLabel(activeOther, ui.relations),
+                    mision: activeOther.mision,
+                  }}
                   relationship={activeOther.relationship}
-                  relationshipLabel={RELATION_LABELS[activeOther.relationship]}
+                  relationshipLabel={ui.relations[activeOther.relationship]}
                   sharePath={buildPairPath(self.mision, activeOther.mision, {
                     a: firstName(self.name),
-                    b: personLabel(activeOther),
+                    b: personLabel(activeOther, ui.relations),
                   })}
                 >
                   <RelationMap
                     self={{ name: firstName(self.name), mision: self.mision }}
                     people={linked.map((person) => ({
-                      name: personLabel(person),
+                      name: personLabel(person, ui.relations),
                       mision: person.mision,
                       relationship: person.relationship,
                       birthKey: `${person.relationship}-${person.birthDate.year}-${person.birthDate.month}-${person.birthDate.day}-${person.name}`,
@@ -211,7 +212,7 @@ export function ReadingFlow() {
                 {atLinkLimit ? (
                   <div className="space-y-3">
                     <p className="text-center text-sm text-mist-500">
-                      {premiumCopy.limitNote(linked.length, FREE_LINK_LIMIT)}
+                      {ui.limitNote(linked.length, FREE_LINK_LIMIT)}
                     </p>
                     <PriceGate compact />
                   </div>
@@ -224,7 +225,7 @@ export function ReadingFlow() {
             <div className="sticky bottom-0 min-w-0 border-t border-ink-700/80 bg-ink-950/90 px-5 py-4 backdrop-blur-md sm:px-7">
               {!atLinkLimit ? (
                 <LinkPersonForm
-                  submitLabel="Ver conexión"
+                  submitLabel={ui.seeConnection}
                   onSubmit={handleLink}
                   addingAnother={linked.length > 0}
                 />
@@ -238,10 +239,10 @@ export function ReadingFlow() {
   );
 }
 
-function ArrowLeft() {
+function ArrowLeft({ title }: { title: string }) {
   return (
     <svg aria-hidden viewBox="0 0 20 20" className="size-4" fill="none">
-      <title>Volver</title>
+      <title>{title}</title>
       <path
         d="M12.5 4.5 7 10l5.5 5.5"
         stroke="currentColor"

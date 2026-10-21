@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { RELATION_LABELS } from "@/components/link-person-form";
+import { useLocale, useUi } from "@/components/locale-provider";
 import { EnergyPulse, NodeOrb } from "@/components/node-orb";
 import { SectionShare } from "@/components/section-share";
 import { getPair } from "@/content";
+import type { Locale } from "@/content/types";
 import type { NumerologyValue, RelationshipType } from "@/lib/numerology";
 import type { ShareCardData, ShareMapNode } from "@/lib/share";
-
-const CONNECTIONS_MAP_TITLE = "Este es tu mapa de conexiones";
 
 export interface RelationNode {
   name: string;
@@ -108,6 +107,8 @@ export function RelationMap({
   activeIndex: number;
   onSelect: (index: number) => void;
 }) {
+  const { locale } = useLocale();
+  const ui = useUi();
   const [bursts, setBursts] = useState<Record<number, number>>({});
   const placed = people.map((person, index) => ({
     person,
@@ -116,17 +117,17 @@ export function RelationMap({
   }));
 
   return (
-    <section aria-label="Mapa de personas">
+    <section aria-label={ui.peopleMap}>
       <div className="overflow-hidden rounded-2xl border border-ink-700 bg-[#07060f]">
         <div className="flex justify-end px-3 pt-3">
           <SectionShare
             section="mapa-de-personas"
-            text={peopleShareText(self, people)}
-            card={peopleShareCard(self, people)}
+            text={peopleShareText(self, people, locale, ui)}
+            card={peopleShareCard(self, people, locale, ui)}
           />
         </div>
         <p className="px-4 text-center text-pretty text-base font-medium leading-snug text-mist-100">
-          {CONNECTIONS_MAP_TITLE}
+          {ui.connectionsTitle}
         </p>
         <div className="relative">
           <svg
@@ -182,7 +183,7 @@ export function RelationMap({
               y={SELF.y}
               value={self.mision}
               title={self.name}
-              subtitle="Tú"
+              subtitle={ui.you}
               tone={SELF_TONE}
               active
               labelAbove
@@ -194,7 +195,7 @@ export function RelationMap({
                 y={node.y}
                 value={node.person.mision}
                 title={node.person.name}
-                subtitle={RELATION_LABELS[node.person.relationship]}
+                subtitle={ui.relations[node.person.relationship]}
                 tone={RELATION_TONE[node.person.relationship]}
                 active={node.index === activeIndex}
                 burst={bursts[node.index] ?? 0}
@@ -226,31 +227,39 @@ function peopleNode(
 function peopleShareCard(
   self: { name: string; mision: NumerologyValue },
   people: RelationNode[],
+  locale: Locale,
+  copy: {
+    someone: string;
+    you: string;
+    connectionsTitle: string;
+    sharesPeople: (who: string) => string;
+    relations: Record<RelationshipType, string>;
+  },
 ): ShareCardData {
-  const who = self.name.trim().split(/\s+/)[0] || "Alguien";
+  const who = self.name.trim().split(/\s+/)[0] || copy.someone;
   const lines = [
-    `${self.name} ${self.mision} · Tú`,
+    `${self.name} ${self.mision} · ${copy.you}`,
     ...people.map(
-      (person) => `${person.name} ${person.mision} · ${RELATION_LABELS[person.relationship]}`,
+      (person) => `${person.name} ${person.mision} · ${copy.relations[person.relationship]}`,
     ),
     "",
     ...people.map((person) => {
-      const pair = getPair(self.mision, person.mision);
+      const pair = getPair(self.mision, person.mision, locale);
       return `${person.name}: ${pair.headline}`;
     }),
   ];
   return {
-    kicker: `${who} te comparte su mapa de conexiones`,
-    message: CONNECTIONS_MAP_TITLE,
+    kicker: copy.sharesPeople(who),
+    message: copy.connectionsTitle,
     detail: lines.join("\n"),
     left: { value: self.mision, label: self.name },
     map: {
-      top: peopleNode(self.name, self.mision, "Tú", SELF_TONE.hex),
+      top: peopleNode(self.name, self.mision, copy.you, SELF_TONE.hex),
       bottom: people.map((person) =>
         peopleNode(
           person.name,
           person.mision,
-          RELATION_LABELS[person.relationship],
+          copy.relations[person.relationship],
           RELATION_TONE[person.relationship].hex,
         ),
       ),
@@ -261,8 +270,16 @@ function peopleShareCard(
 function peopleShareText(
   self: { name: string; mision: NumerologyValue },
   people: RelationNode[],
+  locale: Locale,
+  copy: {
+    someone: string;
+    you: string;
+    connectionsTitle: string;
+    sharesPeople: (who: string) => string;
+    relations: Record<RelationshipType, string>;
+  },
 ): string {
-  const card = peopleShareCard(self, people);
+  const card = peopleShareCard(self, people, locale, copy);
   return [card.kicker, card.message, card.detail]
     .filter((line) => line && line.length > 0)
     .join("\n");

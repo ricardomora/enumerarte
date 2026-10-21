@@ -1,5 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { cookies } from "next/headers";
+import { LanguageToggle } from "@/components/language-toggle";
+import { LocaleProvider } from "@/components/locale-provider";
+import { LOCALE_COOKIE, localeTag, parseLocale } from "@/lib/locale";
 import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -45,10 +49,25 @@ export const viewport: Viewport = {
   themeColor: "#0b0a14",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const jar = await cookies();
+  const locale = parseLocale(jar.get(LOCALE_COOKIE)?.value);
+
   return (
-    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html
+      lang={localeTag(locale)}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="flex min-h-full flex-col">
+        <LocaleProvider initialLocale={locale}>
+          <div className="sticky top-0 z-40 bg-ink-950/80 backdrop-blur-sm">
+            <div className="mx-auto flex w-full max-w-2xl justify-end px-5 py-3">
+              <LanguageToggle />
+            </div>
+          </div>
+          {children}
+        </LocaleProvider>
+      </body>
     </html>
   );
 }

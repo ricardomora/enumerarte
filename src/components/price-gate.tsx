@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { premiumCopy } from "@/content/premium";
+import { useUi } from "@/components/locale-provider";
 import { track, trackOnce } from "@/lib/track";
 
 /**
@@ -11,6 +11,7 @@ import { track, trackOnce } from "@/lib/track";
  */
 
 export function PriceGate({ compact = false }: { compact?: boolean }) {
+  const ui = useUi();
   const [clicked, setClicked] = useState(false);
 
   useEffect(() => {
@@ -25,13 +26,13 @@ export function PriceGate({ compact = false }: { compact?: boolean }) {
   return (
     <section className="space-y-4">
       <div className={`space-y-1 ${compact ? "text-left" : "text-center"}`}>
-        <h3 className="text-balance text-lg font-medium text-mist-100">{premiumCopy.title}</h3>
-        <p className="text-sm text-mist-500">{premiumCopy.lead}</p>
+        <h3 className="text-balance text-lg font-medium text-mist-100">{ui.premiumTitle}</h3>
+        <p className="text-sm text-mist-500">{ui.premiumLead}</p>
       </div>
 
       <div className="rounded-xl border border-accent-500/50 bg-accent-500/8 p-5">
         <ul className="space-y-2.5 text-sm text-mist-300">
-          {premiumCopy.features.map((feature) => (
+          {ui.premiumFeatures.map((feature) => (
             <li key={feature} className="flex gap-2">
               <span aria-hidden className="text-accent-400">
                 ·
@@ -46,13 +47,13 @@ export function PriceGate({ compact = false }: { compact?: boolean }) {
           onClick={handleClick}
           className="mt-5 w-full rounded-xl bg-accent-500 px-5 py-3.5 font-medium text-white transition hover:bg-accent-400 active:scale-[0.99]"
         >
-          {premiumCopy.action}
+          {ui.premiumAction}
         </button>
       </div>
 
       {clicked ? (
         <p role="status" className="animate-rise text-center text-sm text-mist-300">
-          {premiumCopy.confirm}
+          {ui.premiumConfirm}
         </p>
       ) : null}
     </section>

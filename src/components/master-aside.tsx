@@ -1,8 +1,12 @@
+"use client";
+
+import { useLocale } from "@/components/locale-provider";
 import { masterAside } from "@/content/master-note";
 import type { MasterNumber } from "@/lib/numerology";
 
 export function MasterAside({ master, root }: { master: MasterNumber; root: number }) {
-  const note = masterAside(master, root);
+  const { locale } = useLocale();
+  const note = masterAside(master, root, locale);
 
   return (
     <aside className="rounded-xl border border-ink-700 bg-ink-900/50 px-4 py-3">

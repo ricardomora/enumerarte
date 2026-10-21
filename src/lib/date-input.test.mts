@@ -68,6 +68,10 @@ describe("formatDate", () => {
     assert.equal(formatDate({ year: 2000, month: 1, day: 1 }), "1 de enero de 2000");
     assert.equal(formatDate({ year: 1999, month: 12, day: 31 }), "31 de diciembre de 1999");
   });
+
+  test("en inglés el mes va delante y no usa la preposición de", () => {
+    assert.equal(formatDate({ year: 1990, month: 4, day: 15 }, "en"), "April 15, 1990");
+  });
 });
 
 describe("isFutureDate", () => {

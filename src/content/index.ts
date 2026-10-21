@@ -8,11 +8,12 @@
 
 import { type NumerologyValue, pairKey } from "@/lib/numerology";
 import { destinies as enDestinies, shields as enShields, souls as enSouls } from "./en/aspects";
+import { BOND_FRAME_EN } from "./en/bond-frame";
 import { missions as enMissions } from "./en/missions";
 import { pairs as enPairs } from "./en/pairs";
 import { destinies as esDestinies, shields as esShields, souls as esSouls } from "./es/aspects";
 import { missions as esMissions } from "./es/missions";
-import { pairBonds } from "./es/pair-bonds";
+import { BOND_FRAME, pairBonds } from "./es/pair-bonds";
 import { pairs as esPairs } from "./es/pairs";
 import {
   DEFAULT_LOCALE,
@@ -89,6 +90,10 @@ export function getPair(
     throw new Error(`Sin contenido de par para la clave ${key}`);
   }
   return { ...found, bonds };
+}
+
+export function bondFrame(locale: Locale = DEFAULT_LOCALE) {
+  return locale === "en" ? BOND_FRAME_EN : BOND_FRAME;
 }
 
 export { BOND_FRAME, pairBonds } from "./es/pair-bonds";

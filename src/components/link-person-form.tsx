@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import { useUi } from "@/components/locale-provider";
 import { isFutureDate, todayCalendarDate } from "@/lib/date-input";
 import { type CalendarDate, isValidDate, type RelationshipType } from "@/lib/numerology";
 import { track } from "@/lib/track";
@@ -26,21 +27,6 @@ interface LinkPersonFormProps {
   addingAnother?: boolean;
 }
 
-const MONTHS = [
-  "Enero",
-  "Febrero",
-  "Marzo",
-  "Abril",
-  "Mayo",
-  "Junio",
-  "Julio",
-  "Agosto",
-  "Septiembre",
-  "Octubre",
-  "Noviembre",
-  "Diciembre",
-] as const;
-
 const FIRST_YEAR = 1900;
 
 const fieldClass =
@@ -52,6 +38,7 @@ export function LinkPersonForm({
   onSubmit,
   addingAnother = false,
 }: LinkPersonFormProps) {
+  const ui = useUi();
   const dayId = useId();
   const monthId = useId();
   const yearId = useId();
@@ -79,23 +66,23 @@ export function LinkPersonForm({
     formEvent.preventDefault();
 
     if (!day || !month || !year) {
-      reject("missing_date", "Elige día, mes y año.");
+      reject("missing_date", ui.missingDate);
       return;
     }
 
     const birthDate = { day: Number(day), month: Number(month), year: Number(year) };
     if (!isValidDate(birthDate)) {
-      reject("invalid_date", "Revisa la fecha: no parece un día real.");
+      reject("invalid_date", ui.invalidDate);
       return;
     }
 
     if (isFutureDate(birthDate)) {
-      reject("future_date", "Esa fecha está en el futuro.");
+      reject("future_date", ui.futureDate);
       return;
     }
 
     if (!relationship) {
-      reject("missing_relationship", "Elige qué es esta persona para ti.");
+      reject("missing_relationship", ui.missingRelationship);
       return;
     }
 
@@ -120,22 +107,20 @@ export function LinkPersonForm({
           aria-hidden
           className="absolute top-1/2 left-1/2 -z-10 h-10 w-[min(100%,22rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f5a524]/40 blur-2xl"
         />
-        {addingAnother
-          ? "Agrega más personas a tu árbol de conexiones"
-          : "Descubre la conexión que tienes con otra persona"}
+        {addingAnother ? ui.linkMore : ui.linkFirst}
       </h2>
 
       <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
-        <p className="shrink-0 text-sm text-mist-300">Fecha de nacimiento</p>
+        <p className="shrink-0 text-sm text-mist-300">{ui.birthDate}</p>
         <div className="grid min-w-0 flex-1 grid-cols-3 gap-2">
           <select
             id={dayId}
-            aria-label="Día"
+            aria-label={ui.day}
             value={day}
             onChange={(event) => setDay(event.target.value)}
             className={`${fieldClass} w-full`}
           >
-            <option value="">Día</option>
+            <option value="">{ui.day}</option>
             {Array.from({ length: 31 }, (_, index) => index + 1).map((value) => (
               <option key={value} value={value}>
                 {value}
@@ -144,13 +129,13 @@ export function LinkPersonForm({
           </select>
           <select
             id={monthId}
-            aria-label="Mes"
+            aria-label={ui.month}
             value={month}
             onChange={(event) => setMonth(event.target.value)}
             className={`${fieldClass} w-full`}
           >
-            <option value="">Mes</option>
-            {MONTHS.map((label, index) => (
+            <option value="">{ui.month}</option>
+            {ui.months.map((label, index) => (
               <option key={label} value={index + 1}>
                 {label}
               </option>
@@ -158,12 +143,12 @@ export function LinkPersonForm({
           </select>
           <select
             id={yearId}
-            aria-label="Año"
+            aria-label={ui.year}
             value={year}
             onChange={(event) => setYear(event.target.value)}
             className={`${fieldClass} w-full`}
           >
-            <option value="">Año</option>
+            <option value="">{ui.year}</option>
             {years.map((value) => (
               <option key={value} value={value}>
                 {value}
@@ -176,25 +161,25 @@ export function LinkPersonForm({
       <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
         <select
           id={relationId}
-          aria-label="Parentesco"
+          aria-label={ui.relationship}
           value={relationship}
           onChange={(event) => setRelationship(event.target.value as RelationshipType | "")}
           className={`${fieldClass} w-full`}
         >
-          <option value="">Parentesco</option>
-          {(Object.keys(RELATION_LABELS) as RelationshipType[]).map((type) => (
+          <option value="">{ui.relationship}</option>
+          {(Object.keys(ui.relations) as RelationshipType[]).map((type) => (
             <option key={type} value={type}>
-              {RELATION_LABELS[type]}
+              {ui.relations[type]}
             </option>
           ))}
         </select>
         <input
           id={nameId}
           type="text"
-          aria-label="Nombre"
+          aria-label={ui.fullName}
           value={name}
           onChange={(inputEvent) => setName(inputEvent.target.value)}
-          placeholder="Agrégale un nombre"
+          placeholder={ui.addName}
           autoComplete="off"
           className={`${fieldClass} w-full placeholder:text-ink-600`}
         />

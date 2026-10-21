@@ -54,5 +54,6 @@ export function formatDate(date: CalendarDate, locale = "es-ES"): string {
     month: "long",
     timeZone: "UTC",
   }).format(new Date(Date.UTC(2000, date.month - 1, 1)));
+  if (locale.startsWith("en")) return `${monthName} ${date.day}, ${date.year}`;
   return `${date.day} de ${monthName} de ${date.year}`;
 }
