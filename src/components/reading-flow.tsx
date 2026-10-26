@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LinkPersonForm, type LinkPersonInput } from "@/components/link-person-form";
 import { useLocale, useUi } from "@/components/locale-provider";
+import { NumberCatalog } from "@/components/number-catalog";
 import { PairCard } from "@/components/pair-card";
 import { PersonForm, type PersonInput } from "@/components/person-form";
 import { PriceGate } from "@/components/price-gate";
@@ -235,6 +236,7 @@ export function ReadingFlow() {
           ) : null}
         </div>
       </section>
+      {step === "self" ? <NumberCatalog /> : null}
     </div>
   );
 }

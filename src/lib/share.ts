@@ -28,6 +28,11 @@ export function sanitizeShareName(raw: string): string {
     .slice(0, 24);
 }
 
+/** Lectura pública de un número: Camino de Vida, Personalidad, Alma y Expresión. */
+export function numberPath(value: NumerologyValue): string {
+  return `/numero/${value}`;
+}
+
 export function buildPairPath(
   a: NumerologyValue,
   b: NumerologyValue,

@@ -7,7 +7,7 @@ import {
   pairKey,
   RELATIONSHIP_TYPES,
 } from "../lib/numerology/index.js";
-import { getMission, getPair } from "./index.js";
+import { getMission, getPair, getSoul } from "./index.js";
 import { LOCALES } from "./types.js";
 
 describe("registro de contenido", () => {
@@ -31,10 +31,12 @@ describe("registro de contenido", () => {
     }
   });
 
-  test("el respaldo cubre los pares que faltan en inglés", () => {
-    // Sin el respaldo, esto lanzaría: el inglés todavía no tiene pares escritos.
-    const pair = getPair(11, 8, "en");
-    assert.equal(pair.key, "8x11");
+  test("el inglés tiene lectura propia y cae al español solo si falta", () => {
+    const english = getPair(2, 8, "en");
+    assert.equal(english.key, "2x8");
+    assert.notEqual(english.headline, getPair(2, 8).headline);
+    assert.notEqual(english.bonds.pareja, getPair(2, 8).bonds.pareja);
+    assert.equal(getSoul(1, "en").title, "The hunger to decide alone");
   });
 
   test("la búsqueda es simétrica: el orden de las personas no cambia la lectura", () => {
@@ -47,29 +49,37 @@ describe("registro de contenido", () => {
   test("ninguna práctica se repite entre pares distintos", () => {
     // Textos duplicados delatan contenido generado con plantilla, que es
     // exactamente lo que el producto no puede permitirse.
-    const seen = new Map<string, string>();
-    for (const key of allPairKeys()) {
-      const [a, b] = key.split("x").map(Number);
-      const { practice } = getPair(a as never, b as never);
-      const previous = seen.get(practice);
-      assert.equal(previous, undefined, `práctica repetida en ${key} y ${previous}`);
-      seen.set(practice, key);
+    for (const locale of LOCALES) {
+      const seen = new Map<string, string>();
+      for (const key of allPairKeys()) {
+        const [a, b] = key.split("x").map(Number);
+        const { practice } = getPair(a as never, b as never, locale);
+        const previous = seen.get(practice);
+        assert.equal(previous, undefined, `práctica repetida en ${locale} ${key} y ${previous}`);
+        seen.set(practice, key);
+      }
     }
   });
 
   test("ninguna nota de vínculo se repite", () => {
-    const seen = new Map<string, string>();
-    for (const key of allPairKeys()) {
-      const [a, b] = key.split("x").map(Number);
-      const { bonds } = getPair(a as never, b as never);
-      for (const relationship of RELATIONSHIP_TYPES) {
-        const text = bonds[relationship];
-        assert.ok(text.length > 40, `${key} ${relationship} es demasiado corta`);
-        assert.equal(text.includes("%"), false, `${key} ${relationship} parece un puntaje`);
-        const id = `${key}:${relationship}`;
-        const previous = seen.get(text);
-        assert.equal(previous, undefined, `nota de vínculo repetida en ${id} y ${previous}`);
-        seen.set(text, id);
+    for (const locale of LOCALES) {
+      const seen = new Map<string, string>();
+      for (const key of allPairKeys()) {
+        const [a, b] = key.split("x").map(Number);
+        const { bonds } = getPair(a as never, b as never, locale);
+        for (const relationship of RELATIONSHIP_TYPES) {
+          const text = bonds[relationship];
+          assert.ok(text.length > 40, `${locale} ${key} ${relationship} es demasiado corta`);
+          assert.equal(text.includes("%"), false, `${key} ${relationship} parece un puntaje`);
+          const id = `${key}:${relationship}`;
+          const previous = seen.get(text);
+          assert.equal(
+            previous,
+            undefined,
+            `nota de vínculo repetida en ${locale} ${id} y ${previous}`,
+          );
+          seen.set(text, id);
+        }
       }
     }
   });

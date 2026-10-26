@@ -170,9 +170,9 @@ export const termsOfUse = {
     },
     {
       id: "circulo",
-      title: "El círculo que todavía no se vende",
+      title: "El círculo",
       paragraphs: [
-        "Guardar más de dos vínculos forma parte de una oferta que aún no está a la venta. El botón que la menciona no cobra y no reserva un cupo. Si dejas el correo, es para avisarte cuando esa opción exista, no para comprar algo hoy.",
+        "Gratis se pueden guardar dos vínculos. Guardar más está en una lista de avisos: el botón no cobra y no reserva un cupo. Si dejas el correo, es para avisarte cuando esa opción exista.",
       ],
     },
     {

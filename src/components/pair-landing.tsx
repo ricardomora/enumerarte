@@ -1,11 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useLocale, useUi } from "@/components/locale-provider";
 import { NumberGlyph } from "@/components/number-glyph";
 import { ShareArrival, ShareContinueLink } from "@/components/share-arrival";
 import { SiteFooter } from "@/components/site-footer";
-import { getMission, getPair } from "@/content";
-import type { NumerologyValue } from "@/lib/numerology";
+import { bondFrame, getMission, getPair } from "@/content";
+import { type NumerologyValue, RELATIONSHIP_TYPES } from "@/lib/numerology";
+import { numberPath } from "@/lib/share";
 
 export function PairLanding({
   a,
@@ -49,6 +51,40 @@ export function PairLanding({
         </header>
 
         <p className="text-pretty leading-relaxed text-mist-300">{content.body}</p>
+
+        <section className="space-y-4">
+          <h2 className="text-xs uppercase tracking-wider text-accent-400">{ui.whoTheyAre}</h2>
+          {[
+            { id: "a", value: a, mission: missionA },
+            { id: "b", value: b, mission: missionB },
+          ].map((side) => (
+            <div key={side.id} className="space-y-2">
+              <Link
+                href={numberPath(side.value)}
+                className="text-sm font-medium text-mist-100 underline decoration-ink-600 underline-offset-4"
+              >
+                {side.value} · {side.mission.title}
+              </Link>
+              <p className="text-pretty text-sm leading-relaxed text-mist-300">
+                {side.mission.essence}
+              </p>
+              <p className="text-pretty leading-relaxed text-mist-100">{side.mission.body}</p>
+            </div>
+          ))}
+        </section>
+
+        {RELATIONSHIP_TYPES.map((relationship) => {
+          const frame = bondFrame(locale)[relationship];
+          return (
+            <section key={relationship} className="space-y-2">
+              <h2 className="text-xs uppercase tracking-wider text-accent-400">{frame.title}</h2>
+              <p className="text-pretty text-sm leading-relaxed text-mist-500">{frame.lead}</p>
+              <p className="text-pretty leading-relaxed text-mist-100">
+                {content.bonds[relationship]}
+              </p>
+            </section>
+          );
+        })}
 
         <div className="rounded-xl border border-accent-500/30 bg-accent-500/8 p-5">
           <p className="text-xs uppercase tracking-wider text-accent-400">{ui.practiceLabel}</p>

@@ -110,6 +110,7 @@ export interface UiCopy {
   whatOthersSee: string;
   weekly: string;
   betweenYou: string;
+  pairNumbers: (left: number, right: number) => string;
   numbersMapTitle: string;
   connectionsTitle: string;
   peopleMap: string;
@@ -165,6 +166,10 @@ export interface UiCopy {
   practiceLabel: string;
   yourMapTitle: string;
   yourMapBody: string;
+  pathsTitle: string;
+  pathsLead: string;
+  whoTheyAre: string;
+  numberConnections: string;
   limitNote: (used: number, max: number) => string;
   premiumTitle: string;
   premiumLead: string;
@@ -244,6 +249,7 @@ const es: UiCopy = {
   whatOthersSee: "Lo que otros ven",
   weekly: "Señal para esta semana",
   betweenYou: "Qué pasa entre ustedes",
+  pairNumbers: (left, right) => `Camino de Vida ${left} y ${right}`,
   numbersMapTitle: "Estos son tus otros números, dale click al número para conocer más",
   connectionsTitle: "Este es tu mapa de conexiones",
   peopleMap: "Mapa de personas",
@@ -291,6 +297,7 @@ const es: UiCopy = {
     "Una lectura para conversar. No predice salud, dinero ni el futuro de una relación. Está pensada para personas adultas.",
   footerLabel: "Pie",
   footerLinks: [
+    { href: "/#caminos", label: "Números" },
     { href: "/ejemplo", label: "Ejemplo" },
     { href: "/privacidad", label: "Privacidad" },
     { href: "/terminos", label: "Términos" },
@@ -311,11 +318,16 @@ const es: UiCopy = {
   yourMapTitle: "¿Y tu mapa?",
   yourMapBody:
     "Descubre tu Camino de Vida y mira qué señales conectan con las personas de tu vida.",
+  pathsTitle: "Los doce caminos",
+  pathsLead:
+    "Enumerarte calcula un Camino de Vida a partir de la fecha y tres números a partir del nombre: Personalidad, Alma y Expresión. Cada número tiene una lectura para conversar, y cada par de números tiene una nota de cómo se vive ese vínculo en el amor, la familia, la amistad y el trabajo. No es un puntaje y no predice salud, dinero ni una relación. Estas doce lecturas están publicadas para leerlas sin escribir una fecha. Abre un número para leer cómo se mueve, qué aporta, dónde se atasca y qué puede hacer esta semana. Desde esa página se llega a sus doce conexiones.",
+  whoTheyAre: "Quiénes son",
+  numberConnections: "Sus conexiones",
   limitNote: (used, max) =>
-    `Gratis incluye ${max} conexiones (${used}/${max}). Guardar el círculo completo todavía no está a la venta.`,
+    `Gratis guarda ${max} conexiones (${used}/${max}). Déjanos tu correo y te avisamos cuando se puedan guardar más.`,
   premiumTitle: "El círculo completo",
   premiumLead:
-    "Guardar más vínculos y volver a ellos. Todavía no está a la venta y este botón no cobra.",
+    "Guardar más vínculos y volver a ellos. Déjanos tu correo y te avisamos cuando se pueda.",
   premiumFeatures: [
     "Más de dos personas en tu círculo",
     "El mapa de esas personas, guardado para volver",
@@ -324,7 +336,7 @@ const es: UiCopy = {
   ],
   premiumAction: "Quiero que me avisen",
   premiumConfirm:
-    "Todavía no está a la venta. Si dejas tu correo arriba, con la casilla marcada, te avisamos cuando se pueda guardar el círculo.",
+    "Si dejas tu correo arriba, con la casilla marcada, te avisamos cuando se puedan guardar más vínculos. Este botón no cobra.",
   subscribeTitle: "Suscríbete",
   subscribePlaceholder: "tu@correo.com",
   subscribeSubmit: "Suscribirte",
@@ -405,6 +417,7 @@ const en: UiCopy = {
   whatOthersSee: "What others see",
   weekly: "Signal for this week",
   betweenYou: "What happens between you",
+  pairNumbers: (left, right) => `Life Path ${left} and ${right}`,
   numbersMapTitle: "These are your other numbers. Click a number to read more",
   connectionsTitle: "This is your connection map",
   peopleMap: "People map",
@@ -452,6 +465,7 @@ const en: UiCopy = {
     "A reading meant for conversation. It does not predict health, money, or the future of a relationship. It is meant for adults.",
   footerLabel: "Footer",
   footerLinks: [
+    { href: "/#caminos", label: "Numbers" },
     { href: "/ejemplo", label: "Example" },
     { href: "/privacidad", label: "Privacy" },
     { href: "/terminos", label: "Terms" },
@@ -472,11 +486,16 @@ const en: UiCopy = {
   yourMapTitle: "And your map?",
   yourMapBody:
     "Discover your Life Path and see which signals connect with the people in your life.",
+  pathsTitle: "The twelve paths",
+  pathsLead:
+    "Enumerarte calculates a Life Path from a date and three numbers from a name: Personality, Soul, and Expression. Each number has a reading meant for conversation, and each pair of numbers has a note on how that bond is lived in love, in the family, between friends, and at work. It is not a score and it does not predict health, money, or a relationship. These twelve readings are published so they can be read without entering a date. Open a number to read how that person moves, what they bring, where they get stuck, and what they can do this week. That page leads to their twelve connections.",
+  whoTheyAre: "Who they are",
+  numberConnections: "Their connections",
   limitNote: (used, max) =>
-    `Free includes ${max} connections (${used}/${max}). Saving the full circle is not for sale yet.`,
+    `Free saves ${max} connections (${used}/${max}). Leave your email and we will tell you when more can be saved.`,
   premiumTitle: "The full circle",
   premiumLead:
-    "Save more bonds and come back to them. It is not for sale yet and this button does not charge.",
+    "Save more bonds and come back to them. Leave your email and we will tell you when that is possible.",
   premiumFeatures: [
     "More than two people in your circle",
     "The map of those people, saved so you can return",
@@ -485,7 +504,7 @@ const en: UiCopy = {
   ],
   premiumAction: "Tell me when it is ready",
   premiumConfirm:
-    "It is not for sale yet. If you leave your email above, with the box checked, we will tell you when the circle can be saved.",
+    "If you leave your email above, with the box checked, we will tell you when more bonds can be saved. This button does not charge.",
   subscribeTitle: "Subscribe",
   subscribePlaceholder: "you@email.com",
   subscribeSubmit: "Subscribe",

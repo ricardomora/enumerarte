@@ -84,8 +84,8 @@ conflicto, válido aunque el usuario ignore por completo la numerología. Hay un
 test que falla si dos pares comparten la misma práctica, precisamente para
 impedir que el contenido degenere en plantilla.
 
-Cobertura actual: español completo (12 misiones, 78 pares). Inglés tiene las
-misiones y le faltan los pares, y la búsqueda cae a español mientras no existan.
+Cobertura actual: español e inglés completos (12 misiones, Personalidad, Alma,
+Expresión, 78 pares y la nota de cada parentesco).
 
 ### Por qué 78 pares
 
@@ -115,7 +115,7 @@ tiendas de aplicaciones.
 ## Pendiente
 
 - Modelo de grafo con aristas tipadas y perfiles fantasma reclamables
-- Los 78 pares en inglés, y las lecturas de Personalidad, Alma y Expresión. La interfaz ya cambia de idioma; esos textos largos siguen en español hasta que existan.
+- Las lecturas completas de cada par según el vínculo (amor, familia, amistad, trabajo). Hoy cada parentesco tiene una nota corta, en español y en inglés, publicada en `/par/`. Las cuatro capas de cada número están publicadas en `/numero/`.
 - Desplegar en Convex el campo `policyVersion` de las suscripciones. El código ya lo envía.
 - Imagen OG generada por lectura, para el bucle de compartir
 - El script de AdSense y `ads.txt` ya usan el publisher id que entregó la cuenta.

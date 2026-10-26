@@ -110,9 +110,9 @@ export const termsOfUseEn = {
     },
     {
       id: "circulo",
-      title: "The circle that is not for sale yet",
+      title: "The circle",
       paragraphs: [
-        "Saving more than two bonds is part of an offer that is not for sale yet. The button that mentions it does not charge and does not reserve a place. If you leave your email, it is so we can tell you when that option exists, not so you can buy something today.",
+        "Two bonds can be saved for free. Saving more is on a notice list: the button does not charge and does not reserve a place. If you leave your email, it is so we can tell you when that option exists.",
       ],
     },
     {

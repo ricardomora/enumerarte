@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { allPairKeys, parsePairKey } from "./numerology/index.js";
+import { ALL_VALUES, allPairKeys, parsePairKey } from "./numerology/index.js";
 import {
   buildPairPath,
   clipShareLine,
+  numberPath,
   publicShareUrl,
   sanitizeShareName,
   shareCaption,
@@ -29,6 +30,18 @@ describe("sanitizeShareName", () => {
 
   test("acota la longitud para no romper el diseño ni el enlace", () => {
     assert.equal(sanitizeShareName("A".repeat(200)).length, 24);
+  });
+});
+
+describe("numberPath", () => {
+  test("las doce rutas son las que la página de número sabe servir", () => {
+    const known = new Set(ALL_VALUES.map((value) => `/numero/${value}`));
+    assert.equal(known.size, 12);
+    for (const value of ALL_VALUES) {
+      const path = numberPath(value);
+      assert.ok(known.has(path), `ruta desconocida: ${path}`);
+      assert.equal(path, `/numero/${value}`);
+    }
   });
 });
 

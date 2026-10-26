@@ -10,6 +10,7 @@ import { type NumerologyValue, pairKey } from "@/lib/numerology";
 import { destinies as enDestinies, shields as enShields, souls as enSouls } from "./en/aspects";
 import { BOND_FRAME_EN } from "./en/bond-frame";
 import { missions as enMissions } from "./en/missions";
+import { pairBonds as enPairBonds } from "./en/pair-bonds";
 import { pairs as enPairs } from "./en/pairs";
 import { destinies as esDestinies, shields as esShields, souls as esSouls } from "./es/aspects";
 import { missions as esMissions } from "./es/missions";
@@ -85,7 +86,7 @@ export function getPair(
 ): PairReading {
   const key = pairKey(a, b);
   const found = content[locale].pairs[key] ?? content[DEFAULT_LOCALE].pairs[key];
-  const bonds = pairBonds[key];
+  const bonds = (locale === "en" ? enPairBonds[key] : undefined) ?? pairBonds[key];
   if (!found || !bonds) {
     throw new Error(`Sin contenido de par para la clave ${key}`);
   }

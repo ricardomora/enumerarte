@@ -42,6 +42,9 @@ export function PairCard({
           {relationshipLabel}
         </p>
         <p className="text-sm text-mist-500">{who}</p>
+        <p className="font-mono text-sm tracking-wide text-mist-300">
+          {ui.pairNumbers(self.mision, other.mision)}
+        </p>
         <h2 className="text-balance text-2xl font-medium text-mist-100 sm:text-3xl">
           {pair.headline}
         </h2>
